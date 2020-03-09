@@ -1,31 +1,23 @@
 package dev.bernasss12.bebooks;
 
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class EnchantmentData implements Comparable< EnchantmentData >{
     public String id;
+    public String translatedName;
     public int lvl;
-    public int weight;
-    public int color;
+    public int orderIndex;
 
     EnchantmentData(String id, int lvl){
         this.id = id;
         this.lvl = lvl;
-        this.weight = 0;
-        switch (id){
-            case "minecraft:mending":
-                this.color = 0x11ef5e;
-                break;
-            case "minecraft:fortune":
-                this.color = 0xfe115e;
-                break;
-            case "minecraft:silk_touch":
-                this.color = 0x15ff15;
-                break;
-            default:
-                this.color = 0x5e0000;
-                break;
-        }
+        this.orderIndex = 0;
+        Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(id)).ifPresent((e) -> {
+            this.translatedName = (e.getName(lvl)).asString();
+        });;
     }
 
     EnchantmentData(CompoundTag tag){

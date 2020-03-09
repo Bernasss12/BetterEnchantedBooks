@@ -19,7 +19,7 @@ public final class NBTUtils {
     }
 
     /* Turn an ArrayList of enchantment data into a ListTag of enchantments */
-    public static ListTag getEnchantmentTag(List<EnchantmentData> enchantmentList){
+    public static ListTag getEnchantmentListTag(List<EnchantmentData> enchantmentList){
         ListTag listTag = new ListTag();
         for(int i = 0; i < enchantmentList.size(); i++){
             CompoundTag enchantmentTag = new CompoundTag();

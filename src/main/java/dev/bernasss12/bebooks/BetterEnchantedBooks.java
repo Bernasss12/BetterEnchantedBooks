@@ -18,23 +18,6 @@ public class BetterEnchantedBooks implements ModInitializer {
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? getColorFromEnchantmentList(stack) : -1, Items.ENCHANTED_BOOK);
 	}
 
-	public ListTag sortEnchantments(ItemStack stack){
-		if(stack.isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))){
-			return EnchantedBookItem.getEnchantmentTag(stack);
-		}else if(stack.hasEnchantments()){
-			return stack.getEnchantments();
-		}else{
-			return new ListTag();
-		}
-	}
-
-	private ListTag sortEnchantments(ListTag enchantments){
-		List<EnchantmentData> enchantedDataList = NBTUtils.getEnchantmentData(enchantments);
-		Collections.sort(enchantedDataList);
-		ListTag sortedEnchantments = NBTUtils.getEnchantmentTag(enchantedDataList);
-		return sortedEnchantments;
-	}
-
 	/* Get color associated with most valuable enchantment in the list enchantment. */
 	public int getColorFromEnchantmentList(ItemStack stack){
 		if(stack.isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))){
