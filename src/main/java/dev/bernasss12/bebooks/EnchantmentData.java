@@ -1,31 +1,38 @@
 package dev.bernasss12.bebooks;
 
-import net.minecraft.client.resource.language.I18n;
+import dev.bernasss12.bebooks.client.gui.config.BEBooksConfig;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
-public class EnchantmentData implements Comparable< EnchantmentData >{
-    public String id;
+@Environment(EnvType.CLIENT)
+public class EnchantmentData implements Comparable<EnchantmentData> {
+
     public String translatedName;
-    public int lvl;
     public int orderIndex;
+    public int color;
 
-    EnchantmentData(String id, int lvl){
-        this.id = id;
-        this.lvl = lvl;
-        this.orderIndex = 0;
-        Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(id)).ifPresent((e) -> {
-            this.translatedName = (e.getName(lvl)).asString();
-        });;
+    public String id = "";
+    public int lvl;
+
+    public EnchantmentData(String translatedName, int index, int color) {
+        this.orderIndex = index;
+        this.color = color;
+        this.translatedName = translatedName;
     }
 
-    EnchantmentData(CompoundTag tag){
-         this(tag.getString("id"), tag.getShort("lvl"));
+    //TODO take recent changes into account
+    public EnchantmentData(CompoundTag tag) {
+        EnchantmentData enchantmentData = BEBooksConfig.ENCHANTMENT_DATA.get(tag.getString("id"));
+        new EnchantmentData(enchantmentData);
+    }
+
+    public EnchantmentData(EnchantmentData enchantmentData) {
+        new EnchantmentData(enchantmentData.translatedName, enchantmentData.orderIndex, enchantmentData.color);
     }
 
     @Override
     public int compareTo(EnchantmentData enchantmentData) {
-        return this.id.compareTo(enchantmentData.id);
+        return orderIndex;
     }
 }

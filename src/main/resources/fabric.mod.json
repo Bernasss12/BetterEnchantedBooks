@@ -20,6 +20,9 @@
   "entrypoints": {
     "client": [
       "dev.bernasss12.bebooks.BetterEnchantedBooks"
+    ],
+    "modmenu": [
+      "dev.bernasss12.bebooks.ModMenuIntegration"
     ]
   },
   "mixins": [

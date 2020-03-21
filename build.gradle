@@ -16,7 +16,11 @@ dependencies {
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
+	modApi "me.shedaniel.cloth:config-2:2.11.2"
+	include "me.shedaniel.cloth:config-2:2.11.2"
+
 	// Fabric API. This is technically optional, but you probably want it anyway.
+	modImplementation "io.github.prospector:modmenu:1.10.1+build.30"
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
