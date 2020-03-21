@@ -1,6 +1,7 @@
 package dev.bernasss12.bebooks;
 
 import dev.bernasss12.bebooks.client.gui.config.BEBooksConfig;
+import dev.bernasss12.bebooks.util.NBTUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,30 +9,39 @@ import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class BetterEnchantedBooks implements ClientModInitializer {
 
+    private static Map<ItemStack, Integer> cachedColors;
+
     @Override
     public void onInitializeClient() {
+        cachedColors = new HashMap<>();
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? getColorFromEnchantmentList(stack) : -1, Items.ENCHANTED_BOOK);
     }
 
-    /* Get color associated with most valuable enchantment in the list enchantment. */
-    public int getColorFromEnchantmentList(ItemStack stack) {
-        if (!BEBooksConfig.COLOR_BOOKS || !BEBooksConfig.LOADED) return BEBooksConfig.DEFAULT_COLOR;
-        if (stack.isItemEqual(new ItemStack(Items.ENCHANTED_BOOK)) && stack.hasEnchantments()) {
-            ListTag enchantments = EnchantedBookItem.getEnchantmentTag(stack);
-            if (enchantments.size() == 1)
-                return BEBooksConfig.ENCHANTMENT_COLORS.get(enchantments.getCompound(0).getString("id"));
+    public static int getColorFromEnchantmentList(ItemStack stack) {
+        if (!BEBooksConfig.doColorBooks) return BEBooksConfig.defaultBookStripColor;
+        if (cachedColors.containsKey(stack)) return cachedColors.get(stack);
+        else {
+            int color = BEBooksConfig.defaultBookStripColor;
+            if (stack.isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
+                try {
+                    color = BEBooksConfig.mappedEnchantmentColors.get(NBTUtils.getPriorityEnchantmentId(EnchantedBookItem.getEnchantmentTag(stack), BEBooksConfig.doColorBasedOnAlphabeticalOrder));
+                    cachedColors.putIfAbsent(stack, color);
+                } catch (Exception e) {
+                    return color;
+                }
+            }
+            return color;
         }
-        return BEBooksConfig.DEFAULT_COLOR;
+    }
+
+    public static void clearCachedColors() {
+        if (!cachedColors.isEmpty()) cachedColors.clear();
     }
 }

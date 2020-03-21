@@ -14,6 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TitleScreenMixin {
     @Inject(at = @At("HEAD"), method = "init()V")
     private void init(CallbackInfo info) {
-        BEBooksConfig.loadConfig();
+        if (!BEBooksConfig.configsFirstLoaded) BEBooksConfig.loadConfig();
     }
 }

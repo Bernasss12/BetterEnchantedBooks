@@ -1,6 +1,5 @@
 package dev.bernasss12.bebooks.mixin;
 
-import dev.bernasss12.bebooks.EnchantmentData;
 import dev.bernasss12.bebooks.client.gui.config.BEBooksConfig;
 import dev.bernasss12.bebooks.util.NBTUtils;
 import net.fabricmc.api.EnvType;
@@ -14,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Collections;
 import java.util.List;
 
 @Mixin(ItemStack.class)
@@ -27,10 +25,13 @@ public abstract class ItemStackMixin {
 
     @Inject(at = @At("HEAD"), method = "appendEnchantments")
     private static void appendEnchantmentsHead(List<Text> tooltip, ListTag enchantments, CallbackInfo info) {
-        if (BEBooksConfig.LOADED) {
-            List<EnchantmentData> enchantmentData = NBTUtils.getEnchantmentData(enchantments);
-            Collections.sort(enchantmentData);
-            ListTag sortedEnchantments = NBTUtils.getEnchantmentListTag(enchantmentData);
+        if (BEBooksConfig.configsFirstLoaded && BEBooksConfig.doSort) {
+            ListTag sortedEnchantments;
+            try {
+                sortedEnchantments = NBTUtils.sort(enchantments, BEBooksConfig.doSortAlphabetically);
+            } catch (Exception e) {
+                sortedEnchantments = enchantments;
+            }
             enchantments.clear();
             enchantments.addAll(sortedEnchantments);
         }

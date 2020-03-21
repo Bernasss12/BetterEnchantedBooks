@@ -5,7 +5,6 @@ import dev.bernasss12.bebooks.util.StringUtils;
 import me.shedaniel.clothconfig2.gui.entries.StringListEntry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
 
 import java.util.function.Consumer;
 
@@ -22,7 +21,8 @@ public class StringColorEntry extends StringListEntry {
     public void render(int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isSelected, float delta) {
         super.render(index, y, x, entryWidth, entryHeight, mouseX, mouseY, isSelected, delta);
         this.colorDisplayWidget.y = y + 1;
-        if(StringUtils.isValidHexColorString(textFieldWidget.getText())) colorDisplayWidget.setColor(StringUtils.getValidIntColor(textFieldWidget.getText()));
+        if (StringUtils.isValidHexColorString(textFieldWidget.getText()))
+            colorDisplayWidget.setColor(StringUtils.getValidIntColor(textFieldWidget.getText()));
         if (MinecraftClient.getInstance().textRenderer.isRightToLeft()) {
             this.colorDisplayWidget.x = x + resetButton.getWidth() + textFieldWidget.getWidth();
         } else {
