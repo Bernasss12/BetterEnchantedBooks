@@ -46,11 +46,11 @@ public final class NBTUtils {
             }
         }
         // Curse filtering
-        if(BEBooksConfig.doKeepCursesBelow){
+        if (BEBooksConfig.doKeepCursesBelow) {
             List<EnchantmentCompound> curses = new ArrayList<>();
             // Checks individually for enchantments that are curses.
             sortedEnchantments.forEach((enchantment) -> {
-                if(enchantment.isCursed()){
+                if (enchantment.isCursed()) {
                     curses.add(enchantment);
                 }
             });
@@ -61,21 +61,21 @@ public final class NBTUtils {
         return toListTag(sortedEnchantments);
     }
 
-    public static boolean hasCurses(ListTag listTag){
+    public static boolean hasCurses(ListTag listTag) {
         List<EnchantmentCompound> result = fromListTag(listTag).stream().filter(EnchantmentCompound::isCursed).collect(Collectors.toList());
         return !result.isEmpty();
     }
 
-    public static String getFirstCurse(ListTag listTag){
+    public static String getFirstCurse(ListTag listTag) {
         return hasCurses(listTag) ? fromListTag(listTag).stream().filter(EnchantmentCompound::isCursed).findFirst().get().id : "";
     }
 
     public static String getPriorityEnchantmentId(ListTag listTag, boolean mode) {
         try {
             List<EnchantmentCompound> enchantmentCompounds = fromListTag(sort(listTag, mode));
-            if(BEBooksConfig.doColorOverrideWhenCursed){
+            if (BEBooksConfig.doColorOverrideWhenCursed) {
                 String curse = getFirstCurse(listTag);
-                if(!curse.isEmpty()) return curse;
+                if (!curse.isEmpty()) return curse;
             }
             return !enchantmentCompounds.isEmpty() ? enchantmentCompounds.get(0).id : "";
         } catch (Exception e) {
@@ -122,7 +122,7 @@ public final class NBTUtils {
             return enchantmentCompound;
         }
 
-        public boolean isCursed(){
+        public boolean isCursed() {
             return isCursed;
         }
 

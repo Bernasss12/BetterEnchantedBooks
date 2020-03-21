@@ -41,7 +41,9 @@ public class BEBooksConfig {
     public static boolean doColorBooks = true;
     public static boolean doColorOverrideWhenCursed = true; // TODO implement
     public static boolean doColorBasedOnAlphabeticalOrder = true;
-    public static int defaultBookStripColor = 0x5c1500;
+
+    // Default minecraft book color, sorta
+    public static int defaultBookStripColor = 0xc5133a;
 
     public static void loadEnchantmentData() {
         File file = new File(FabricLoader.getInstance().getConfigDirectory(), "bebooks/enchantment_data.json");

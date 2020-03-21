@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "item/book",
-    "layer1": "item/book_overlay"
+    "layer0": "bebooks:item/enchanted_book_no_strip",
+    "layer1": "bebooks:item/enchanted_book_strip"
   }
 }
