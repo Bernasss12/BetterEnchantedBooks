@@ -219,7 +219,7 @@ public class BEBooksConfig {
         return builder;
     }
 
-    private static class EnchantmentData {
+    public static class EnchantmentData {
         public String translatedName;
         public int orderIndex;
         public int color;
