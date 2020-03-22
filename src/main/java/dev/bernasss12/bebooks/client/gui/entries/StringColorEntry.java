@@ -1,6 +1,6 @@
 package dev.bernasss12.bebooks.client.gui.entries;
 
-import dev.bernasss12.bebooks.client.gui.ColorDisplayWidget;
+import dev.bernasss12.bebooks.client.gui.widgets.ColorDisplayWidget;
 import dev.bernasss12.bebooks.util.StringUtils;
 import me.shedaniel.clothconfig2.gui.entries.StringListEntry;
 import net.minecraft.client.MinecraftClient;

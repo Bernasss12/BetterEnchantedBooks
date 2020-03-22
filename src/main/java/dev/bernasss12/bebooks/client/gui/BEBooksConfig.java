@@ -1,10 +1,9 @@
-package dev.bernasss12.bebooks.client.gui.config;
+package dev.bernasss12.bebooks.client.gui;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
 import dev.bernasss12.bebooks.BetterEnchantedBooks;
-import dev.bernasss12.bebooks.EnchantmentData;
 import dev.bernasss12.bebooks.client.gui.entries.StringColorEntry;
 import dev.bernasss12.bebooks.util.StringUtils;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
@@ -39,7 +38,7 @@ public class BEBooksConfig {
     public static boolean doKeepCursesBelow = true;
     // Coloring Settings
     public static boolean doColorBooks = true;
-    public static boolean doColorOverrideWhenCursed = true; // TODO implement
+    public static boolean doColorOverrideWhenCursed = true;
     public static boolean doColorBasedOnAlphabeticalOrder = true;
 
     // Default minecraft book color, sorta
@@ -218,5 +217,17 @@ public class BEBooksConfig {
             loadConfig();
         });
         return builder;
+    }
+
+    private static class EnchantmentData {
+        public String translatedName;
+        public int orderIndex;
+        public int color;
+
+        public EnchantmentData(String translatedName, int index, int color) {
+            this.orderIndex = index;
+            this.color = color;
+            this.translatedName = translatedName;
+        }
     }
 }

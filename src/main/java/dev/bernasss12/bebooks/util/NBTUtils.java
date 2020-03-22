@@ -1,6 +1,6 @@
 package dev.bernasss12.bebooks.util;
 
-import dev.bernasss12.bebooks.client.gui.config.BEBooksConfig;
+import dev.bernasss12.bebooks.client.gui.BEBooksConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -16,9 +16,6 @@ import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public final class NBTUtils {
-    private NBTUtils() {
-    }
-
     /**
      * Turn a ListTag of enchantments into an ArrayList of enchantment data
      *

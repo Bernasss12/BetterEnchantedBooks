@@ -1,4 +1,4 @@
-package dev.bernasss12.bebooks.client.gui;
+package dev.bernasss12.bebooks.client.gui.widgets;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;

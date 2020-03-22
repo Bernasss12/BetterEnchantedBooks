@@ -1,6 +1,6 @@
 package dev.bernasss12.bebooks.mixin;
 
-import dev.bernasss12.bebooks.client.gui.config.BEBooksConfig;
+import dev.bernasss12.bebooks.client.gui.BEBooksConfig;
 import dev.bernasss12.bebooks.util.NBTUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
