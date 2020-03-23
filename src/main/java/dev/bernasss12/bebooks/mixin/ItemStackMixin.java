@@ -29,11 +29,10 @@ public abstract class ItemStackMixin {
             ListTag sortedEnchantments;
             try {
                 sortedEnchantments = NBTUtils.sort(enchantments, BEBooksConfig.doSortAlphabetically);
-            } catch (Exception e) {
-                sortedEnchantments = enchantments;
+                enchantments.clear();
+                enchantments.addAll(sortedEnchantments);
+            } catch (Exception ignored) {
             }
-            enchantments.clear();
-            enchantments.addAll(sortedEnchantments);
         }
     }
 }
