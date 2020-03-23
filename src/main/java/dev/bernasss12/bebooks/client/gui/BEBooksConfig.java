@@ -41,6 +41,9 @@ public class BEBooksConfig {
     public static boolean doColorOverrideWhenCursed = true;
     public static boolean doColorBasedOnAlphabeticalOrder = true;
 
+    // Tooltip Icon Settings
+    public static TooltipSetting tooltipSetting = TooltipSetting.ON_SHIFT;
+
     // Default minecraft book color, sorta
     public static int defaultBookStripColor = 0xc5133a;
 
@@ -217,6 +220,12 @@ public class BEBooksConfig {
             loadConfig();
         });
         return builder;
+    }
+
+    public enum TooltipSetting {
+        ENABLED,
+        ON_SHIFT,
+        DISABLED
     }
 
     public static class EnchantmentData {
