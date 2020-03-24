@@ -30,4 +30,4 @@ I'll try to keep everything as customizable as possible.
 
 ## License
 
-Please read it at [licence](LICENCE).
+Please read it at [licence](LICENSE).
