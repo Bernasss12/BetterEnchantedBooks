@@ -15,6 +15,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
@@ -31,6 +32,8 @@ public class BEBooksConfig {
     public static Map<String, EnchantmentData> storedEnchantmentData;
     public static Map<String, Integer> mappedEnchantmentColors;
     public static Map<String, Integer> mappedEnchantmentIndices;
+    public static Map<String, EnchantmentTarget> mappedEnchantmentTargets;
+
     // TODO Possibly will be an Enum with 3 different options in the future. (doSort and doSortAlphabetically -> EnumSortingMode(NONE, ALPHABETICAL, PRIORITY)
     // Sorting Settings
     public static boolean doSort = true;
@@ -42,7 +45,7 @@ public class BEBooksConfig {
     public static boolean doColorBasedOnAlphabeticalOrder = true;
 
     // Tooltip Icon Settings
-    public static TooltipSetting tooltipSetting = TooltipSetting.ON_SHIFT;
+    public static TooltipSetting tooltipSetting = TooltipSetting.ENABLED;
 
     // Default minecraft book color, sorta
     public static int defaultBookStripColor = 0xc5133a;
@@ -50,27 +53,23 @@ public class BEBooksConfig {
     public static void loadEnchantmentData() {
         File file = new File(FabricLoader.getInstance().getConfigDirectory(), "bebooks/enchantment_data.json");
         Gson gson = new Gson();
+        mappedEnchantmentTargets = new HashMap<>();
         // Try and read the file and parse the json.
         try {
             if (file.getParentFile().mkdirs()) System.out.println("[BEBooks] Config folder created!");
             storedEnchantmentData = gson.fromJson(new InputStreamReader(new FileInputStream(file)), new TypeToken<Map<String, EnchantmentData>>() {
             }.getType());
-            // After parsing the stored map information try and add any absent enchantments that may have been added since the last configuration of the mod.
-            int index = storedEnchantmentData.size();
-            for (Enchantment enchantment : Registry.ENCHANTMENT) {
-                if (storedEnchantmentData.putIfAbsent(Objects.requireNonNull(Registry.ENCHANTMENT.getId(enchantment)).toString(), new EnchantmentData(I18n.translate(enchantment.getTranslationKey()), index, defaultBookStripColor)) == null)
-                    index++;
-            }
         } catch (Exception e) {
             // In case map parsing fails create a new empty map and populate it with all registered enchantments with the default color.
             System.err.println(e);
             storedEnchantmentData = new HashMap<>();
-            int index = storedEnchantmentData.size();
-            for (Enchantment enchantment : Registry.ENCHANTMENT) {
-                //String translationKey = I18n.translate(enchantment.getTranslationKey());
-                if (storedEnchantmentData.putIfAbsent(Objects.requireNonNull(Registry.ENCHANTMENT.getId(enchantment)).toString(), new EnchantmentData(I18n.translate(enchantment.getTranslationKey()), index, defaultBookStripColor)) == null)
-                    index++;
-            }
+        }
+        int index = storedEnchantmentData.size();
+        for (Enchantment enchantment : Registry.ENCHANTMENT) {
+            String id = Objects.requireNonNull(Registry.ENCHANTMENT.getId(enchantment)).toString();
+            mappedEnchantmentTargets.putIfAbsent(id, enchantment.type);
+            if (storedEnchantmentData.putIfAbsent(id, new EnchantmentData(I18n.translate(enchantment.getTranslationKey()), index, defaultBookStripColor)) == null)
+                index++;
         }
         mappedEnchantmentColors = new HashMap<>();
         mappedEnchantmentIndices = new HashMap<>();
@@ -99,6 +98,7 @@ public class BEBooksConfig {
         File file = new File(FabricLoader.getInstance().getConfigDirectory(), "bebooks/config.properties");
         try {
             if (file.getParentFile().mkdirs()) System.out.println("[BEBooks] Config folder created!");
+            // ThreadLocal
             // Sorting Settings
             doSort = true;
             doSortAlphabetically = true;

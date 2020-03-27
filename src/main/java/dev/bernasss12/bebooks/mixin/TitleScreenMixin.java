@@ -1,6 +1,7 @@
 package dev.bernasss12.bebooks.mixin;
 
 import dev.bernasss12.bebooks.client.gui.BEBooksConfig;
+import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -14,6 +15,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TitleScreenMixin {
     @Inject(at = @At("HEAD"), method = "init()V")
     private void init(CallbackInfo info) {
-        if (!BEBooksConfig.configsFirstLoaded) BEBooksConfig.loadConfig();
+        if (!BEBooksConfig.configsFirstLoaded) {
+            TooltipDrawerHelper.populateEnchantmentIconList();
+            BEBooksConfig.loadConfig();
+        }
     }
 }
