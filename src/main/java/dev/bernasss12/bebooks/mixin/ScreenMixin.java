@@ -10,6 +10,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,6 +37,8 @@ public abstract class ScreenMixin extends DrawableHelper {
 
     @Shadow
     protected MinecraftClient minecraft;
+
+    @Shadow protected ItemRenderer itemRenderer;
 
     @Inject(at = @At(value = "HEAD"),
             method = "renderTooltip(Lnet/minecraft/item/ItemStack;II)V")
@@ -86,18 +90,25 @@ public abstract class ScreenMixin extends DrawableHelper {
         }
         RenderSystem.pushMatrix();
         RenderSystem.enableRescaleNormal();
-        //RenderSystem.translatef(0f, 0f, 1f);
+        RenderSystem.translatef(0f, 0f, 1f);
         TooltipDrawerHelper.TooltipQueuedEntry entry = BetterEnchantedBooks.cachedTooltipIcons.get(BetterEnchantedBooks.enchantedItemStack.get());
         translatedY += entry.getFirstLine() * 10 + 12;
-        for (List<TooltipDrawerHelper.IconIdentifier> iconList : entry.getList()) {
-            int translatedLineX = translatedX;
-            for (TooltipDrawerHelper.IconIdentifier icon : iconList) {
-                this.minecraft.getTextureManager().bindTexture(icon.getTextureIdentifier());
-                DrawableHelper.blit(translatedLineX, translatedY, 8, 8, 0, 0, 16, 16, 16, 16);
+        for (Enchantment enchantment : entry.getList()) {
+            int translatedLineX = translatedX + 4;
+            for (ItemStack icon : TooltipDrawerHelper.enchantmentIconListMap.get(enchantment)) {
+                drawScaledItem(itemRenderer, icon, translatedLineX, translatedY, 0.5f);
                 translatedLineX += 8;
             }
             translatedY += 20;
         }
         RenderSystem.popMatrix();
+    }
+
+    private void drawScaledItem(ItemRenderer itemRenderer, ItemStack stack, int x, int y, float scale){
+        int scaledX = (int) (x / scale);
+        int scaledY = (int) (y / scale);
+        RenderSystem.scalef(scale, scale, 1.0f);
+        itemRenderer.renderGuiItem(stack, scaledX - 8, scaledY);
+        RenderSystem.scalef(1.0f/scale, 1.0f/scale, 1.0f);
     }
 }

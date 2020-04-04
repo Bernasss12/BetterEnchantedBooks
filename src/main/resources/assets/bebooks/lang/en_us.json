@@ -1,11 +1,16 @@
 {
   "category.bebooks.sorting_settings": "Tooltip Enchantment Sorting",
   "category.bebooks.book_coloring_settings": "Book Coloring Settings",
+  "category.bebooks.tooltip_settings": "Book Coloring Settings",
   "entry.bebooks.sorting_settings.sort": "Sort Tooltips",
   "entry.bebooks.sorting_settings.sort_alphabetically": "Sort Alphabetically",
   "entry.bebooks.sorting_settings.keep_curses_at_bottom": "Force Curses At Bottom Of Tooltip",
   "entry.bebooks.book_coloring_settings.active": "Color Books",
   "entry.bebooks.book_coloring_settings.do_color_based_on_alphabetical_order": "Color Based On Alphabetical Order",
   "entry.bebooks.book_coloring_settings.curse_color_override_others": "Curse Color Overrides Others",
-  "subcategory.bebooks.book_coloring_settings.enchantment_color": "Enchantment color"
+  "entry.bebooks.tooltip_settings.tooltip_mode": "When to display the applicable items icons",
+  "subcategory.bebooks.book_coloring_settings.enchantment_color": "Enchantment color",
+  "enum.bebooks.tooltip_settings.enabled": "§aAlways",
+  "enum.bebooks.tooltip_settings.on_shift": "§6On Shift",
+  "enum.bebooks.tooltip_settings.disabled": "§cNever"
 }
