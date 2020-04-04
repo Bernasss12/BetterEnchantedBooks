@@ -38,7 +38,8 @@ public abstract class ScreenMixin extends DrawableHelper {
     @Shadow
     protected MinecraftClient minecraft;
 
-    @Shadow protected ItemRenderer itemRenderer;
+    @Shadow
+    protected ItemRenderer itemRenderer;
 
     @Inject(at = @At(value = "HEAD"),
             method = "renderTooltip(Lnet/minecraft/item/ItemStack;II)V")
@@ -104,11 +105,11 @@ public abstract class ScreenMixin extends DrawableHelper {
         RenderSystem.popMatrix();
     }
 
-    private void drawScaledItem(ItemRenderer itemRenderer, ItemStack stack, int x, int y, float scale){
+    private void drawScaledItem(ItemRenderer itemRenderer, ItemStack stack, int x, int y, float scale) {
         int scaledX = (int) (x / scale);
         int scaledY = (int) (y / scale);
         RenderSystem.scalef(scale, scale, 1.0f);
         itemRenderer.renderGuiItem(stack, scaledX - 8, scaledY);
-        RenderSystem.scalef(1.0f/scale, 1.0f/scale, 1.0f);
+        RenderSystem.scalef(1.0f / scale, 1.0f / scale, 1.0f);
     }
 }

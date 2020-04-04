@@ -26,7 +26,6 @@ import net.minecraft.util.registry.Registry;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class BEBooksConfig {
@@ -69,9 +68,6 @@ public class BEBooksConfig {
     public static boolean doColorBooks = true;
     public static boolean doColorOverrideWhenCursed = true;
     public static boolean doColorBasedOnAlphabeticalOrder = true;
-
-    // Tooltip Icon Settings
-    public static TooltipSetting tooltipSetting = TooltipSetting.ENABLED;
 
     // Default minecraft book color, sorta
     public static int defaultBookStripColor = 0xc5133a;
@@ -251,7 +247,7 @@ public class BEBooksConfig {
         enchantments.sort(Comparator.comparing(entry -> I18n.translate(entry.getFieldName())));
         bookColoring.addEntry(entryBuilder.startSubCategory("subcategory.bebooks.book_coloring_settings.enchantment_color", enchantments).build());
         // Tooltip settings page
-        tooltipCategory.addEntry(entryBuilder.startEnumSelector("entry.bebooks.tooltip_settings.tooltip_mode", TooltipSetting.class, tooltipSetting).setDefaultValue(DEFAULT_TOOLTIP_SETTING).setSaveConsumer( setting -> tooltipSetting = setting ).build());
+        tooltipCategory.addEntry(entryBuilder.startEnumSelector("entry.bebooks.tooltip_settings.tooltip_mode", TooltipSetting.class, tooltipSetting).setDefaultValue(DEFAULT_TOOLTIP_SETTING).setSaveConsumer(setting -> tooltipSetting = setting).build());
         builder.setSavingRunnable(() -> {
             saveConfig();
             loadConfig();
@@ -264,9 +260,9 @@ public class BEBooksConfig {
         ON_SHIFT,
         DISABLED;
 
-        public static TooltipSetting fromString(String string){
-            for(TooltipSetting value : TooltipSetting.values()){
-                if(value.toString().equals(string)){
+        public static TooltipSetting fromString(String string) {
+            for (TooltipSetting value : TooltipSetting.values()) {
+                if (value.toString().equals(string)) {
                     return value;
                 }
             }
