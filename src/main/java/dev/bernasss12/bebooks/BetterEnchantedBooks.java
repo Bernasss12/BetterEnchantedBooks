@@ -1,6 +1,7 @@
 package dev.bernasss12.bebooks;
 
 import dev.bernasss12.bebooks.client.gui.BEBooksConfig;
+import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import dev.bernasss12.bebooks.util.NBTUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -16,11 +17,19 @@ import java.util.Map;
 @Environment(EnvType.CLIENT)
 public class BetterEnchantedBooks implements ClientModInitializer {
 
+    public static final String MODID = "bebooks";
+
     private static Map<ItemStack, Integer> cachedColors;
+    public static Map<ItemStack, TooltipDrawerHelper.TooltipQueuedEntry> cachedTooltipIcons;
+
+    public static ThreadLocal<ItemStack> enchantedItemStack;
 
     @Override
     public void onInitializeClient() {
         cachedColors = new HashMap<>();
+        cachedTooltipIcons = new HashMap<>();
+        enchantedItemStack = new ThreadLocal<>();
+        enchantedItemStack.set(ItemStack.EMPTY);
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? getColorFromEnchantmentList(stack) : -1, Items.ENCHANTED_BOOK);
     }
 
