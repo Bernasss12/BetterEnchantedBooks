@@ -16,34 +16,43 @@ import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public final class NBTUtils {
+
+    public static ListTag sort(ListTag listTag, BEBooksConfig.SortingSetting mode) throws Exception {
+        return sort(listTag, mode, BEBooksConfig.doKeepCursesBelow);
+    }
+
     /**
      * Turn a ListTag of enchantments into an ArrayList of enchantment data
      *
      * @param mode true for Alphabelical sorting, false for priority index sorting.
      **/
-    public static ListTag sort(ListTag listTag, boolean mode) throws Exception {
+    public static ListTag sort(ListTag listTag, BEBooksConfig.SortingSetting mode, boolean cursesBelow) throws Exception {
         List<EnchantmentCompound> sortedEnchantments = fromListTag(listTag);
-        if (mode) {
-            // Alphabetically
-            try {
-                sortedEnchantments.sort(Comparator.comparing(EnchantmentCompound::getTranslatedName));
-            } catch (Exception e) {
-                System.out.println("Failed to sort ListTag alphabetically: " + listTag);
-                System.out.println(sortedEnchantments);
-                throw new Exception(e);
-            }
-        } else {
-            // Priority
-            try {
-                sortedEnchantments.sort(Comparator.comparing(EnchantmentCompound::getIndex));
-            } catch (Exception e) {
-                System.out.println("Failed to sort ListTag via priority index: " + listTag);
-                System.out.println(sortedEnchantments);
-                throw new Exception(e);
-            }
+        // Sorting
+        switch (mode) {
+            case ALPHABETICALLY:
+                try {
+                    sortedEnchantments.sort(Comparator.comparing(EnchantmentCompound::getTranslatedName));
+                } catch (Exception e) {
+                    System.out.println("Failed to sort ListTag alphabetically: " + listTag);
+                    System.out.println(sortedEnchantments);
+                    throw new Exception(e);
+                }
+                break;
+            case CUSTOM:
+                try {
+                    sortedEnchantments.sort(Comparator.comparing(EnchantmentCompound::getIndex));
+                } catch (Exception e) {
+                    System.out.println("Failed to sort ListTag via priority index: " + listTag);
+                    System.out.println(sortedEnchantments);
+                    throw new Exception(e);
+                }
+                break;
+            case DISABLED:
+                break;
         }
         // Curse filtering
-        if (BEBooksConfig.doKeepCursesBelow) {
+        if (cursesBelow) {
             List<EnchantmentCompound> curses = new ArrayList<>();
             // Checks individually for enchantments that are curses.
             sortedEnchantments.forEach((enchantment) -> {
@@ -63,16 +72,11 @@ public final class NBTUtils {
         return !result.isEmpty();
     }
 
-    public static String getFirstCurse(ListTag listTag) {
-        return hasCurses(listTag) ? fromListTag(listTag).stream().filter(EnchantmentCompound::isCursed).findFirst().get().id : "";
-    }
-
-    public static String getPriorityEnchantmentId(ListTag listTag, boolean mode) {
+    public static String getPriorityEnchantmentId(ListTag listTag, BEBooksConfig.SortingSetting mode) {
         try {
-            List<EnchantmentCompound> enchantmentCompounds = fromListTag(sort(listTag, mode));
-            if (BEBooksConfig.doColorOverrideWhenCursed) {
-                String curse = getFirstCurse(listTag);
-                if (!curse.isEmpty()) return curse;
+            List<EnchantmentCompound> enchantmentCompounds = fromListTag(sort(listTag, mode, true));
+            if (BEBooksConfig.doCurseColorOverride && hasCurses(listTag)) {
+                return ((CompoundTag) listTag.get(listTag.size() - 1)).getString("id");
             }
             return !enchantmentCompounds.isEmpty() ? enchantmentCompounds.get(0).id : "";
         } catch (Exception e) {
@@ -129,6 +133,11 @@ public final class NBTUtils {
 
         public int getIndex() {
             return this.index;
+        }
+
+        @Override
+        public String toString() {
+            return "id:\"" + id + "\",index:" + index + (isCursed ? ",curse" : "");
         }
     }
 }

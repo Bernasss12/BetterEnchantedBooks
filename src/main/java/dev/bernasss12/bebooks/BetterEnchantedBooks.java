@@ -34,13 +34,13 @@ public class BetterEnchantedBooks implements ClientModInitializer {
     }
 
     public static int getColorFromEnchantmentList(ItemStack stack) {
-        if (!BEBooksConfig.doColorBooks) return BEBooksConfig.defaultBookStripColor;
+        if (!BEBooksConfig.doColorBooks) return BEBooksConfig.DEFAULT_BOOK_STRIP_COLOR;
         if (cachedColors.containsKey(stack)) return cachedColors.get(stack);
         else {
-            int color = BEBooksConfig.defaultBookStripColor;
+            int color = BEBooksConfig.DEFAULT_BOOK_STRIP_COLOR;
             if (stack.isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
                 try {
-                    color = BEBooksConfig.mappedEnchantmentColors.get(NBTUtils.getPriorityEnchantmentId(EnchantedBookItem.getEnchantmentTag(stack), BEBooksConfig.doColorBasedOnAlphabeticalOrder));
+                    color = BEBooksConfig.mappedEnchantmentColors.get(NBTUtils.getPriorityEnchantmentId(EnchantedBookItem.getEnchantmentTag(stack), BEBooksConfig.colorPrioritySetting));
                     cachedColors.putIfAbsent(stack, color);
                 } catch (Exception e) {
                     return color;

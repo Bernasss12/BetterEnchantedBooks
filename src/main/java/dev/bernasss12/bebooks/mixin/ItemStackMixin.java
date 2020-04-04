@@ -32,10 +32,10 @@ public abstract class ItemStackMixin {
 
     @Inject(at = @At(value = "HEAD"), method = "appendEnchantments")
     private static void appendEnchantmentsHead(List<Text> tooltip, ListTag enchantments, CallbackInfo info) {
-        if (BEBooksConfig.configsFirstLoaded && BEBooksConfig.doSort) {
+        if (BEBooksConfig.configsFirstLoaded && BEBooksConfig.sortingSetting != BEBooksConfig.SortingSetting.DISABLED) {
             ListTag sortedEnchantments;
             try {
-                sortedEnchantments = NBTUtils.sort(enchantments, BEBooksConfig.doSortAlphabetically);
+                sortedEnchantments = NBTUtils.sort(enchantments, BEBooksConfig.sortingSetting);
                 enchantments.clear();
                 enchantments.addAll(sortedEnchantments);
                 if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {

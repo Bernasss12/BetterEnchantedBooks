@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
 import dev.bernasss12.bebooks.BetterEnchantedBooks;
-import dev.bernasss12.bebooks.client.gui.entries.StringColorEntry;
-import dev.bernasss12.bebooks.util.StringUtils;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
@@ -30,6 +28,7 @@ import java.util.*;
 @Environment(EnvType.CLIENT)
 public class BEBooksConfig {
 
+    private static final int SETTINGS_VERSION = 2;
 
     public static boolean configsFirstLoaded = false;
     public static Map<String, EnchantmentData> storedEnchantmentData;
@@ -59,18 +58,21 @@ public class BEBooksConfig {
     private static final TooltipSetting DEFAULT_TOOLTIP_SETTING = TooltipSetting.ON_SHIFT;
     public static TooltipSetting tooltipSetting;
 
-    // TODO Possibly will be an Enum with 3 different options in the future. (doSort and doSortAlphabetically -> EnumSortingMode(NONE, ALPHABETICAL, PRIORITY)
     // Sorting Settings
-    public static boolean doSort = true;
-    public static boolean doSortAlphabetically = true;
-    public static boolean doKeepCursesBelow = true;
+    private static final SortingSetting DEFAULT_SORTING_SETTING = SortingSetting.ALPHABETICALLY;
+    public static SortingSetting sortingSetting;
+    private static final boolean DEFAULT_KEEP_CURSES_BELOW = true;
+    public static boolean doKeepCursesBelow;
     // Coloring Settings
-    public static boolean doColorBooks = true;
-    public static boolean doColorOverrideWhenCursed = true;
-    public static boolean doColorBasedOnAlphabeticalOrder = true;
+    private static final boolean DEFAULT_COLOR_BOOKS = true;
+    public static boolean doColorBooks;
+    private static final boolean DEFAULT_CURSE_COLOR_OVERRIDE = true;
+    public static boolean doCurseColorOverride;
+    private static final SortingSetting DEFAULT_COLOR_PRIORITY_SETTING = SortingSetting.ALPHABETICALLY;
+    public static SortingSetting colorPrioritySetting;
 
     // Default minecraft book color, sorta
-    public static int defaultBookStripColor = 0xc5133a;
+    public static final int DEFAULT_BOOK_STRIP_COLOR = 0xc5133a;
 
     public static void loadEnchantmentData() {
         File file = new File(FabricLoader.getInstance().getConfigDirectory(), "bebooks/enchantment_data.json");
@@ -90,7 +92,7 @@ public class BEBooksConfig {
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             String id = Objects.requireNonNull(Registry.ENCHANTMENT.getId(enchantment)).toString();
             mappedEnchantmentTargets.putIfAbsent(id, enchantment.type);
-            if (storedEnchantmentData.putIfAbsent(id, new EnchantmentData(I18n.translate(enchantment.getTranslationKey()), index, defaultBookStripColor)) == null)
+            if (storedEnchantmentData.putIfAbsent(id, new EnchantmentData(I18n.translate(enchantment.getTranslationKey()), index, DEFAULT_BOOK_STRIP_COLOR)) == null)
                 index++;
         }
         mappedEnchantmentColors = new HashMap<>();
@@ -118,17 +120,17 @@ public class BEBooksConfig {
 
     public static void loadConfig() {
         File file = new File(FabricLoader.getInstance().getConfigDirectory(), "bebooks/config.properties");
+        int version;
         try {
             if (file.getParentFile().mkdirs()) System.out.println("[BEBooks] Config folder created!");
             // ThreadLocal
             // Sorting Settings
-            doSort = true;
-            doSortAlphabetically = true;
-            doKeepCursesBelow = true;
+            sortingSetting = DEFAULT_SORTING_SETTING;
+            doKeepCursesBelow = DEFAULT_KEEP_CURSES_BELOW;
             // Coloring Settings
-            doColorBooks = true;
-            doColorOverrideWhenCursed = true; // TODO implement
-            doColorBasedOnAlphabeticalOrder = true;
+            doColorBooks = DEFAULT_COLOR_BOOKS;
+            doCurseColorOverride = DEFAULT_CURSE_COLOR_OVERRIDE; // TODO implement
+            colorPrioritySetting = DEFAULT_COLOR_PRIORITY_SETTING;
             // Tooltip Settings
             tooltipSetting = DEFAULT_TOOLTIP_SETTING;
             loadEnchantmentData();
@@ -137,27 +139,51 @@ public class BEBooksConfig {
             }
             Properties properties = new Properties();
             properties.load(new FileInputStream(file));
+            // Get setting version
+            if (properties.containsKey("version")) {
+                version = Integer.parseInt(properties.getProperty("version"));
+            } else {
+                version = 0;
+            }
             // Sorting Settings
-            doSort = Boolean.parseBoolean(properties.getProperty("sort"));
-            doSortAlphabetically = Boolean.parseBoolean(properties.getProperty("sort_alphabetically"));
+            if (version == 0) {
+                if (Boolean.parseBoolean(properties.getProperty("sort"))) {
+                    if (Boolean.parseBoolean(properties.getProperty("sort_alphabetically"))) {
+                        sortingSetting = SortingSetting.ALPHABETICALLY;
+                    } else {
+                        sortingSetting = SortingSetting.CUSTOM;
+                    }
+                } else {
+                    sortingSetting = SortingSetting.DISABLED;
+                }
+            } else {
+                sortingSetting = SortingSetting.fromString(properties.getProperty("sorting_mode"));
+            }
             doKeepCursesBelow = Boolean.parseBoolean(properties.getProperty("keep_curses_below"));
             // Coloring Settings
             doColorBooks = Boolean.parseBoolean(properties.getProperty("color_books"));
-            doColorOverrideWhenCursed = Boolean.parseBoolean(properties.getProperty("override_curse_color"));
-            doColorBasedOnAlphabeticalOrder = Boolean.parseBoolean(properties.getProperty("color_books_based_on_alphabetical_order"));
+            doCurseColorOverride = Boolean.parseBoolean(properties.getProperty("override_curse_color"));
+            if (version == 0) {
+                if (Boolean.parseBoolean(properties.getProperty("color_books_based_on_alphabetical_order"))) {
+                    colorPrioritySetting = SortingSetting.ALPHABETICALLY;
+                } else {
+                    colorPrioritySetting = SortingSetting.CUSTOM;
+                }
+            } else {
+                colorPrioritySetting = SortingSetting.fromString(properties.getProperty("color_mode"));
+            }
             // Tooltip Settings
             tooltipSetting = TooltipSetting.fromString(properties.getProperty("tooltip_mode"));
             saveConfig();
         } catch (Exception e) {
             e.printStackTrace();
             // Sorting Settings
-            doSort = true;
-            doSortAlphabetically = true;
-            doKeepCursesBelow = true;
+            sortingSetting = DEFAULT_SORTING_SETTING;
+            doKeepCursesBelow = DEFAULT_KEEP_CURSES_BELOW;
             // Coloring Settings
-            doColorBooks = true;
-            doColorOverrideWhenCursed = true; // TODO implement
-            doColorBasedOnAlphabeticalOrder = true;
+            doColorBooks = DEFAULT_COLOR_BOOKS;
+            doCurseColorOverride = DEFAULT_CURSE_COLOR_OVERRIDE; // TODO implement
+            colorPrioritySetting = DEFAULT_COLOR_PRIORITY_SETTING;
             // Tooltip settings
             tooltipSetting = DEFAULT_TOOLTIP_SETTING;
             loadEnchantmentData();
@@ -176,29 +202,31 @@ public class BEBooksConfig {
         try {
             FileWriter writer = new FileWriter(file, false);
             Properties properties = new Properties();
+            // Settings version
+            properties.setProperty("version", SETTINGS_VERSION + "");
             // Sorting Settings
-            properties.setProperty("sort", doSort + "");
-            properties.setProperty("sort_alphabetically", doSortAlphabetically + "");
+            properties.setProperty("sorting_mode", sortingSetting.toString());
             properties.setProperty("keep_curses_below", doKeepCursesBelow + "");
             // Coloring Settings
             properties.setProperty("color_books", doColorBooks + "");
-            properties.setProperty("override_curse_color", doColorOverrideWhenCursed + "");
-            properties.setProperty("color_books_based_on_alphabetical_order", doColorBasedOnAlphabeticalOrder + "");
+            properties.setProperty("override_curse_color", doCurseColorOverride + "");
+            properties.setProperty("color_mode", colorPrioritySetting.toString());
             // Tooltip Settings
-            tooltipSetting = DEFAULT_TOOLTIP_SETTING;
+            properties.setProperty("tooltip_mode", tooltipSetting.toString());
             saveEnchantmentData();
             properties.store(writer, null);
             writer.close();
         } catch (Exception e) {
             e.printStackTrace();
             // Sorting Settings
-            doSort = true;
-            doSortAlphabetically = true;
-            doKeepCursesBelow = true;
+            sortingSetting = DEFAULT_SORTING_SETTING;
+            doKeepCursesBelow = DEFAULT_KEEP_CURSES_BELOW;
             // Coloring Settings
-            doColorBooks = true;
-            doColorOverrideWhenCursed = true; // TODO implement
-            doColorBasedOnAlphabeticalOrder = true;
+            doColorBooks = DEFAULT_COLOR_BOOKS;
+            doCurseColorOverride = DEFAULT_CURSE_COLOR_OVERRIDE; // TODO implement
+            colorPrioritySetting = DEFAULT_COLOR_PRIORITY_SETTING;
+            // Tooltip Setting
+            tooltipSetting = DEFAULT_TOOLTIP_SETTING;
             saveEnchantmentData();
         }
     }
@@ -214,35 +242,22 @@ public class BEBooksConfig {
         // Sorting settings page
         builder.setDefaultBackgroundTexture(new Identifier("minecraft:textures/block/spruce_planks.png"));
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
-        sortingCategory.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.sorting_settings.sort", doSort).setSaveConsumer((doSortInput) -> {
-            doSort = doSortInput;
-        }).build());
-        sortingCategory.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.sorting_settings.sort_alphabetically", doSortAlphabetically).setSaveConsumer((doSortAlphabeticallyInput) -> {
-            doSortAlphabetically = doSortAlphabeticallyInput;
-        }).build());
-        sortingCategory.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.sorting_settings.keep_curses_at_bottom", doKeepCursesBelow).setSaveConsumer((doKeepCursesBelowInput) -> {
-            doKeepCursesBelow = doKeepCursesBelowInput;
-        }).build());
+        sortingCategory.addEntry(entryBuilder.startEnumSelector("entry.bebooks.sorting_settings.sorting_mode", SortingSetting.class, sortingSetting).setDefaultValue(DEFAULT_SORTING_SETTING).setSaveConsumer(setting -> sortingSetting = setting).build());
+        sortingCategory.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.sorting_settings.keep_curses_at_bottom", doKeepCursesBelow).setSaveConsumer((doKeepCursesBelowInput) -> doKeepCursesBelow = doKeepCursesBelowInput).build());
         // Coloring settings page
-        bookColoring.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.book_coloring_settings.active", doColorBooks).setSaveConsumer((doColorBooksInput) -> {
-            doColorBooks = doColorBooksInput;
-        }).build());
-        bookColoring.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.book_coloring_settings.do_color_based_on_alphabetical_order", doColorBasedOnAlphabeticalOrder).setSaveConsumer((doColorBasedOnAlphabeticalOrderInput) -> {
-            doColorBasedOnAlphabeticalOrder = doColorBasedOnAlphabeticalOrderInput;
-        }).build());
-        bookColoring.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.book_coloring_settings.curse_color_override_others", doColorOverrideWhenCursed).setSaveConsumer((doColorOverrideWhenCursedInput) -> {
-            doColorOverrideWhenCursed = doColorOverrideWhenCursedInput;
-        }).build());
+        bookColoring.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.book_coloring_settings.active", doColorBooks).setSaveConsumer((doColorBooksInput) -> doColorBooks = doColorBooksInput).build());
+        bookColoring.addEntry(entryBuilder.startEnumSelector("entry.bebooks.book_coloring_settings.color_mode", SortingSetting.class, colorPrioritySetting).setDefaultValue(DEFAULT_COLOR_PRIORITY_SETTING).setSaveConsumer(setting -> colorPrioritySetting = setting).build());
+        bookColoring.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.book_coloring_settings.curse_color_override_others", doCurseColorOverride).setSaveConsumer((doColorOverrideWhenCursedInput) -> doCurseColorOverride = doColorOverrideWhenCursedInput).build());
         ArrayList<AbstractConfigListEntry> enchantments = new ArrayList<>();
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             String key = Registry.ENCHANTMENT.getId(enchantment).toString();
-            enchantments.add(new StringColorEntry(enchantment.getTranslationKey(), StringUtils.getHexColorString(mappedEnchantmentColors.get(key)), (string) ->
+            enchantments.add(entryBuilder.startColorField(enchantment.getTranslationKey(), mappedEnchantmentColors.get(key)).setSaveConsumer((string) ->
             {
                 EnchantmentData data = storedEnchantmentData.get(key);
-                data.color = StringUtils.getValidIntColor(string);
+                data.color = string;
                 data.translatedName = data.translatedName.equals(Util.createTranslationKey("enchantment", new Identifier(key))) ? I18n.translate(data.translatedName) : data.translatedName;
                 storedEnchantmentData.replace(key, data);
-            }));
+            }).build());
         }
         enchantments.sort(Comparator.comparing(entry -> I18n.translate(entry.getFieldName())));
         bookColoring.addEntry(entryBuilder.startSubCategory("subcategory.bebooks.book_coloring_settings.enchantment_color", enchantments).build());
@@ -275,6 +290,26 @@ public class BEBooksConfig {
         }
     }
 
+    public enum SortingSetting implements SelectionListEntry.Translatable {
+        ALPHABETICALLY,
+        CUSTOM,
+        DISABLED;
+
+        public static SortingSetting fromString(String string) {
+            for (SortingSetting value : SortingSetting.values()) {
+                if (value.toString().equals(string)) {
+                    return value;
+                }
+            }
+            return DEFAULT_SORTING_SETTING;
+        }
+
+        @Override
+        public String getKey() {
+            return "enum.bebooks.sorting_settings." + toString().toLowerCase();
+        }
+    }
+
     public static class EnchantmentData {
         public String translatedName;
         public int orderIndex;
@@ -284,6 +319,11 @@ public class BEBooksConfig {
             this.orderIndex = index;
             this.color = color;
             this.translatedName = translatedName;
+        }
+
+        @Override
+        public String toString() {
+            return "index:" + orderIndex + "name:\"" + translatedName + "\",color:" + color;
         }
     }
 }
