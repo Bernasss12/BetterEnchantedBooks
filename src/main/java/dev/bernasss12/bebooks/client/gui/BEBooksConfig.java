@@ -17,8 +17,8 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
 import java.io.*;
@@ -235,34 +235,35 @@ public class BEBooksConfig {
         // Base config builder
         ConfigBuilder builder = ConfigBuilder.create();
         // Creating categories
-        ConfigCategory sortingCategory = builder.getOrCreateCategory("category.bebooks.sorting_settings");
-        ConfigCategory bookColoring = builder.getOrCreateCategory("category.bebooks.book_coloring_settings");
-        ConfigCategory tooltipCategory = builder.getOrCreateCategory("category.bebooks.tooltip_settings");
+        ConfigCategory sortingCategory = builder.getOrCreateCategory(new TranslatableText("category.bebooks.sorting_settings"));
+        ConfigCategory bookColoring = builder.getOrCreateCategory(new TranslatableText("category.bebooks.book_coloring_settings"));
+        ConfigCategory tooltipCategory = builder.getOrCreateCategory(new TranslatableText("category.bebooks.tooltip_settings"));
         // Adding entries to the categories
         // Sorting settings page
         builder.setDefaultBackgroundTexture(new Identifier("minecraft:textures/block/spruce_planks.png"));
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
-        sortingCategory.addEntry(entryBuilder.startEnumSelector("entry.bebooks.sorting_settings.sorting_mode", SortingSetting.class, sortingSetting).setDefaultValue(DEFAULT_SORTING_SETTING).setSaveConsumer(setting -> sortingSetting = setting).build());
-        sortingCategory.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.sorting_settings.keep_curses_at_bottom", doKeepCursesBelow).setSaveConsumer((doKeepCursesBelowInput) -> doKeepCursesBelow = doKeepCursesBelowInput).build());
+        sortingCategory.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.sorting_settings.sorting_mode"), SortingSetting.class, sortingSetting).setDefaultValue(DEFAULT_SORTING_SETTING).setSaveConsumer(setting -> sortingSetting = setting).build());
+        sortingCategory.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.sorting_settings.keep_curses_at_bottom"), doKeepCursesBelow).setSaveConsumer((doKeepCursesBelowInput) -> doKeepCursesBelow = doKeepCursesBelowInput).build());
+
         // Coloring settings page
-        bookColoring.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.book_coloring_settings.active", doColorBooks).setSaveConsumer((doColorBooksInput) -> doColorBooks = doColorBooksInput).build());
-        bookColoring.addEntry(entryBuilder.startEnumSelector("entry.bebooks.book_coloring_settings.color_mode", SortingSetting.class, colorPrioritySetting).setDefaultValue(DEFAULT_COLOR_PRIORITY_SETTING).setSaveConsumer(setting -> colorPrioritySetting = setting).build());
-        bookColoring.addEntry(entryBuilder.startBooleanToggle("entry.bebooks.book_coloring_settings.curse_color_override_others", doCurseColorOverride).setSaveConsumer((doColorOverrideWhenCursedInput) -> doCurseColorOverride = doColorOverrideWhenCursedInput).build());
+        bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.active"), doColorBooks).setSaveConsumer((doColorBooksInput) -> doColorBooks = doColorBooksInput).build());
+        bookColoring.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.book_coloring_settings.color_mode"), SortingSetting.class, colorPrioritySetting).setDefaultValue(DEFAULT_COLOR_PRIORITY_SETTING).setSaveConsumer(setting -> colorPrioritySetting = setting).build());
+        bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.curse_color_override_others"), doCurseColorOverride).setSaveConsumer((doColorOverrideWhenCursedInput) -> doCurseColorOverride = doColorOverrideWhenCursedInput).build());
         ArrayList<AbstractConfigListEntry> enchantments = new ArrayList<>();
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             String key = Registry.ENCHANTMENT.getId(enchantment).toString();
-            enchantments.add(entryBuilder.startColorField(enchantment.getTranslationKey(), mappedEnchantmentColors.get(key)).setSaveConsumer((string) ->
+            enchantments.add(entryBuilder.startColorField(new TranslatableText(enchantment.getTranslationKey()), mappedEnchantmentColors.get(key)).setSaveConsumer((string) ->
             {
                 EnchantmentData data = storedEnchantmentData.get(key);
                 data.color = string;
-                data.translatedName = data.translatedName.equals(Util.createTranslationKey("enchantment", new Identifier(key))) ? I18n.translate(data.translatedName) : data.translatedName;
+                data.translatedName = "name";
                 storedEnchantmentData.replace(key, data);
             }).build());
         }
-        enchantments.sort(Comparator.comparing(entry -> I18n.translate(entry.getFieldName())));
-        bookColoring.addEntry(entryBuilder.startSubCategory("subcategory.bebooks.book_coloring_settings.enchantment_color", enchantments).build());
+        enchantments.sort(Comparator.comparing(entry -> I18n.translate(entry.getFieldName().asString())));
+        bookColoring.addEntry(entryBuilder.startSubCategory(new TranslatableText("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build());
         // Tooltip settings page
-        tooltipCategory.addEntry(entryBuilder.startEnumSelector("entry.bebooks.tooltip_settings.tooltip_mode", TooltipSetting.class, tooltipSetting).setDefaultValue(DEFAULT_TOOLTIP_SETTING).setSaveConsumer(setting -> tooltipSetting = setting).build());
+        tooltipCategory.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.tooltip_settings.tooltip_mode"), TooltipSetting.class, tooltipSetting).setDefaultValue(DEFAULT_TOOLTIP_SETTING).setSaveConsumer(setting -> tooltipSetting = setting).build());
         builder.setSavingRunnable(() -> {
             saveConfig();
             loadConfig();
