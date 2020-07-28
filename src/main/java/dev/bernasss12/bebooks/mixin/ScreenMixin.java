@@ -15,7 +15,6 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.StringRenderable;
-import net.minecraft.text.TranslatableText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,14 +42,12 @@ public abstract class ScreenMixin extends DrawableHelper {
     @Inject(at = @At(value = "HEAD"),
             method = "Lnet/minecraft/client/gui/screen/Screen;renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V")
     private void appendRenderTooltipHead(MatrixStack matrices, ItemStack stack, int x, int y, CallbackInfo info) {
-        System.out.println("Set to " + new TranslatableText(stack.getTranslationKey()).asString());
         BetterEnchantedBooks.enchantedItemStack.set(stack);
     }
 
     @Inject(at = @At(value = "TAIL"),
             method = "Lnet/minecraft/client/gui/screen/Screen;renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V")
     private void appendRenderTooltipTail(MatrixStack matrices, ItemStack stack, int x, int y, CallbackInfo info) {
-        System.out.println("Set to empty");
         BetterEnchantedBooks.enchantedItemStack.set(ItemStack.EMPTY);
     }
 
