@@ -107,12 +107,12 @@ public final class NBTUtils {
             this.id = compound.getString("id");
             this.lvl = compound.getShort("lvl");
             this.isCursed = Objects.requireNonNull(Registry.ENCHANTMENT.get(new Identifier(id))).isCursed();
-            if (BEBooksConfig.storedEnchantmentData.containsKey(id)) {
-                this.translatedName = BEBooksConfig.storedEnchantmentData.get(id).translatedName;
-                this.index = BEBooksConfig.storedEnchantmentData.get(id).orderIndex;
+            if (BEBooksConfig.enchantmentDataMap.containsKey(id)) {
+                this.translatedName = BEBooksConfig.enchantmentDataMap.get(id).translatedName;
+                this.index = BEBooksConfig.enchantmentDataMap.get(id).orderIndex;
             } else {
                 this.translatedName = Registry.ENCHANTMENT.get(new Identifier(id)).getName(lvl).asString();
-                this.index = BEBooksConfig.storedEnchantmentData.size();
+                this.index = BEBooksConfig.enchantmentDataMap.size();
             }
         }
 

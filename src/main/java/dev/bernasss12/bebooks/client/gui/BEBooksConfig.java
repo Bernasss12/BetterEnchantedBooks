@@ -17,6 +17,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -31,7 +32,7 @@ public class BEBooksConfig {
     private static final int SETTINGS_VERSION = 2;
 
     public static boolean configsFirstLoaded = false;
-    public static Map<String, EnchantmentData> storedEnchantmentData;
+    public static Map<String, EnchantmentData> enchantmentDataMap;
     public static Map<String, Integer> mappedEnchantmentColors;
     public static Map<String, Integer> mappedEnchantmentIndices;
     public static Map<String, EnchantmentTarget> mappedEnchantmentTargets;
@@ -81,23 +82,25 @@ public class BEBooksConfig {
         // Try and read the file and parse the json.
         try {
             if (file.getParentFile().mkdirs()) System.out.println("[BEBooks] Config folder created!");
-            storedEnchantmentData = gson.fromJson(new InputStreamReader(new FileInputStream(file)), new TypeToken<Map<String, EnchantmentData>>() {
+            Map<String, StoredEnchantmentData> storedEnchantmentDataMap;
+            storedEnchantmentDataMap = gson.fromJson(new InputStreamReader(new FileInputStream(file)), new TypeToken<Map<String, StoredEnchantmentData>>() {
             }.getType());
+            enchantmentDataMap = fromStoredData(storedEnchantmentDataMap);
         } catch (Exception e) {
             // In case map parsing fails create a new empty map and populate it with all registered enchantments with the default color.
             System.err.println(e);
-            storedEnchantmentData = new HashMap<>();
+            enchantmentDataMap = new HashMap<>();
         }
-        int index = storedEnchantmentData.size();
+        int index = enchantmentDataMap.size();
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             String id = Objects.requireNonNull(Registry.ENCHANTMENT.getId(enchantment)).toString();
             mappedEnchantmentTargets.putIfAbsent(id, enchantment.type);
-            if (storedEnchantmentData.putIfAbsent(id, new EnchantmentData(I18n.translate(enchantment.getTranslationKey()), index, DEFAULT_BOOK_STRIP_COLOR)) == null)
+            if (enchantmentDataMap.putIfAbsent(id, new EnchantmentData(I18n.translate(enchantment.getTranslationKey()), index, DEFAULT_BOOK_STRIP_COLOR)) == null)
                 index++;
         }
         mappedEnchantmentColors = new HashMap<>();
         mappedEnchantmentIndices = new HashMap<>();
-        storedEnchantmentData.forEach((key, enchantmentData) -> {
+        enchantmentDataMap.forEach((key, enchantmentData) -> {
             mappedEnchantmentColors.putIfAbsent(key, enchantmentData.color);
             mappedEnchantmentIndices.putIfAbsent(key, enchantmentData.orderIndex);
         });
@@ -110,7 +113,7 @@ public class BEBooksConfig {
         // Try and write the Map to the json config file.
         try {
             FileWriter writer = new FileWriter(file);
-            gson.toJson(storedEnchantmentData, writer);
+            gson.toJson(toStoredData(enchantmentDataMap), writer);
             writer.close();
         } catch (JsonIOException | IOException e) {
             // Upon failure print the exception.
@@ -250,17 +253,15 @@ public class BEBooksConfig {
         bookColoring.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.book_coloring_settings.color_mode"), SortingSetting.class, colorPrioritySetting).setDefaultValue(DEFAULT_COLOR_PRIORITY_SETTING).setSaveConsumer(setting -> colorPrioritySetting = setting).build());
         bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.curse_color_override_others"), doCurseColorOverride).setSaveConsumer((doColorOverrideWhenCursedInput) -> doCurseColorOverride = doColorOverrideWhenCursedInput).build());
         ArrayList<AbstractConfigListEntry> enchantments = new ArrayList<>();
-        for (Enchantment enchantment : Registry.ENCHANTMENT) {
-            String key = Registry.ENCHANTMENT.getId(enchantment).toString();
-            enchantments.add(entryBuilder.startColorField(new TranslatableText(enchantment.getTranslationKey()), mappedEnchantmentColors.get(key)).setSaveConsumer((string) ->
+        for (Map.Entry<String, EnchantmentData> enchantmentDataEntry : enchantmentDataMap.entrySet()){
+            enchantments.add(entryBuilder.startColorField(new LiteralText(enchantmentDataEntry.getValue().translatedName), mappedEnchantmentColors.get(enchantmentDataEntry.getKey())).setSaveConsumer((guiEntryColor) ->
             {
-                EnchantmentData data = storedEnchantmentData.get(key);
-                data.color = string;
-                data.translatedName = "name";
-                storedEnchantmentData.replace(key, data);
+                EnchantmentData data = enchantmentDataMap.get(enchantmentDataEntry.getKey());
+                data.color = guiEntryColor;
+                enchantmentDataMap.replace(enchantmentDataEntry.getKey(), data);
             }).build());
         }
-        enchantments.sort(Comparator.comparing(entry -> I18n.translate(entry.getFieldName().asString())));
+        enchantments.sort(Comparator.comparing(entry -> entry.getFieldName().asString()));
         bookColoring.addEntry(entryBuilder.startSubCategory(new TranslatableText("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build());
         // Tooltip settings page
         tooltipCategory.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.tooltip_settings.tooltip_mode"), TooltipSetting.class, tooltipSetting).setDefaultValue(DEFAULT_TOOLTIP_SETTING).setSaveConsumer(setting -> tooltipSetting = setting).build());
@@ -311,20 +312,49 @@ public class BEBooksConfig {
         }
     }
 
-    public static class EnchantmentData {
-        public String translatedName;
+    public static class StoredEnchantmentData {
         public int orderIndex;
         public int color;
 
-        public EnchantmentData(String translatedName, int index, int color) {
+        public StoredEnchantmentData(int index, int color) {
             this.orderIndex = index;
             this.color = color;
+        }
+
+        public StoredEnchantmentData(EnchantmentData data) {
+            this.orderIndex = data.orderIndex;
+            this.color = data.color;
+        }
+    }
+
+    public static class EnchantmentData extends StoredEnchantmentData {
+        public String translatedName;
+
+        public EnchantmentData(String translatedName, int index, int color) {
+            super( index, color);
             this.translatedName = translatedName;
         }
 
-        @Override
-        public String toString() {
-            return "index:" + orderIndex + "name:\"" + translatedName + "\",color:" + color;
+        public EnchantmentData(StoredEnchantmentData data, String key) {
+            super(data.orderIndex, data.color);
+            Optional<Enchantment> enchantment = Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(key));
+            this.translatedName = enchantment.isPresent() ? enchantment.get().getName(1).getString() : "Error translating.";
         }
+    }
+
+    private static HashMap<String, EnchantmentData> fromStoredData(Map<String, StoredEnchantmentData> storedData){
+        HashMap<String, EnchantmentData> result = new HashMap<>();
+        for (Map.Entry<String, StoredEnchantmentData> entry : storedData.entrySet()){
+            result.putIfAbsent(entry.getKey(), new EnchantmentData(entry.getValue(), entry.getKey()));
+        }
+        return result;
+    }
+
+    private static HashMap<String, StoredEnchantmentData> toStoredData(Map<String, EnchantmentData> data){
+        HashMap<String, StoredEnchantmentData> result = new HashMap<>();
+        for (Map.Entry<String, EnchantmentData> entry : data.entrySet()){
+            result.putIfAbsent(entry.getKey(), new StoredEnchantmentData(entry.getValue()));
+        }
+        return result;
     }
 }
