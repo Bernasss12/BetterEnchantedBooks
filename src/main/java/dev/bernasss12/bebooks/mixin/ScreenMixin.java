@@ -6,14 +6,16 @@ import dev.bernasss12.bebooks.client.gui.BEBooksConfig;
 import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.text.StringRenderable;
+import net.minecraft.text.TranslatableText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,32 +35,31 @@ public abstract class ScreenMixin extends DrawableHelper {
     public int height;
 
     @Shadow
-    protected TextRenderer font;
-
-    @Shadow
-    protected MinecraftClient minecraft;
+    protected TextRenderer textRenderer;
 
     @Shadow
     protected ItemRenderer itemRenderer;
 
     @Inject(at = @At(value = "HEAD"),
-            method = "renderTooltip(Lnet/minecraft/item/ItemStack;II)V")
-    private void appendRenderTooltipHead(ItemStack stack, int x, int y, CallbackInfo info) {
+            method = "Lnet/minecraft/client/gui/screen/Screen;renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V")
+    private void appendRenderTooltipHead(MatrixStack matrices, ItemStack stack, int x, int y, CallbackInfo info) {
+        System.out.println("Set to " + new TranslatableText(stack.getTranslationKey()).asString());
         BetterEnchantedBooks.enchantedItemStack.set(stack);
     }
 
     @Inject(at = @At(value = "TAIL"),
-            method = "renderTooltip(Lnet/minecraft/item/ItemStack;II)V")
-    private void appendRenderTooltipTail(ItemStack stack, int x, int y, CallbackInfo info) {
+            method = "Lnet/minecraft/client/gui/screen/Screen;renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V")
+    private void appendRenderTooltipTail(MatrixStack matrices, ItemStack stack, int x, int y, CallbackInfo info) {
+        System.out.println("Set to empty");
         BetterEnchantedBooks.enchantedItemStack.set(ItemStack.EMPTY);
     }
 
     @Inject(at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/screen/Screen;setBlitOffset(I)V",
-            ordinal = 1),
-            method = "renderTooltip(Ljava/util/List;II)V"
+            target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V",
+            ordinal = 0),
+            method = "renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V"
     )
-    private void appendRenderTooltipAfterInvokeImmediateDraw(List<String> text, int x, int y, CallbackInfo info) {
+    private void appendRenderTooltipAfterInvokeImmediateDraw(MatrixStack matrices, List<? extends StringRenderable> text, int x, int y, CallbackInfo info) {
         if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
             switch (BEBooksConfig.tooltipSetting) {
                 case ENABLED:
@@ -73,8 +74,8 @@ public abstract class ScreenMixin extends DrawableHelper {
         }
     }
 
-    protected void drawTooltipIcons(List<String> text, int x, int y) {
-        int maxLength = this.font.getStringWidth(text.stream().max(Comparator.comparing(line -> this.font.getStringWidth(line))).get());
+    protected void drawTooltipIcons(List<? extends StringRenderable> text, int x, int y) {
+        int maxLength = this.textRenderer.getWidth(text.stream().max(Comparator.comparing(line -> this.textRenderer.getWidth(line))).get());
         int translatedX = x + 12;
         int translatedY = y - 12;
         int tooltipHeight = 8;
@@ -91,7 +92,7 @@ public abstract class ScreenMixin extends DrawableHelper {
         }
         RenderSystem.pushMatrix();
         RenderSystem.enableRescaleNormal();
-        RenderSystem.translatef(0f, 0f, 1f);
+        RenderSystem.translatef(0f, 0f, 401f);
         TooltipDrawerHelper.TooltipQueuedEntry entry = BetterEnchantedBooks.cachedTooltipIcons.get(BetterEnchantedBooks.enchantedItemStack.get());
         translatedY += entry.getFirstLine() * 10 + 12;
         for (Enchantment enchantment : entry.getList()) {
@@ -102,6 +103,7 @@ public abstract class ScreenMixin extends DrawableHelper {
             }
             translatedY += 20;
         }
+        RenderSystem.translatef(0f, 0f, -401f);
         RenderSystem.popMatrix();
     }
 
@@ -110,6 +112,6 @@ public abstract class ScreenMixin extends DrawableHelper {
         int scaledY = (int) (y / scale);
         RenderSystem.scalef(scale, scale, 1.0f);
         itemRenderer.renderGuiItem(stack, scaledX - 8, scaledY);
-        RenderSystem.scalef(1.0f / scale, 1.0f / scale, 1.0f);
+        itemRenderer.renderGuiItemIcon(stack, scaledX - 8, scaledY);
     }
 }
