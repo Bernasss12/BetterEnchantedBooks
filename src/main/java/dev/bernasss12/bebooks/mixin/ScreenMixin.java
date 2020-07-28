@@ -111,7 +111,7 @@ public abstract class ScreenMixin extends DrawableHelper {
         int scaledX = (int) (x / scale);
         int scaledY = (int) (y / scale);
         RenderSystem.scalef(scale, scale, 1.0f);
-        itemRenderer.renderGuiItem(stack, scaledX - 8, scaledY);
         itemRenderer.renderGuiItemIcon(stack, scaledX - 8, scaledY);
+        RenderSystem.scalef(1 / scale, 1/ scale, 1.0f);
     }
 }
