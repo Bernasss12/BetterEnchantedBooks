@@ -1,0 +1,18 @@
+{
+  "category.bebooks.sorting_settings": "Tooltip 附魔排序",
+  "category.bebooks.book_coloring_settings": "附魔书颜色设置",
+  "category.bebooks.tooltip_settings": "Tooltip 提示图标设置",
+  "entry.bebooks.sorting_settings.sorting_mode": "工具提示排序模式:",
+  "entry.bebooks.sorting_settings.keep_curses_at_bottom": "Force Curses At Bottom Of Tooltip",
+  "entry.bebooks.book_coloring_settings.active": "彩色附魔书",
+  "entry.bebooks.book_coloring_settings.color_mode": "如何选择书本颜色:",
+  "entry.bebooks.book_coloring_settings.curse_color_override_others": "Curse Color Overrides Others",
+  "subcategory.bebooks.book_coloring_settings.enchantment_color": "附魔颜色",
+  "entry.bebooks.tooltip_settings.tooltip_mode": "可用工具提示图标",
+  "enum.bebooks.sorting_settings.alphabetically": "§a按字母顺序",
+  "enum.bebooks.sorting_settings.custom": "§a自定义",
+  "enum.bebooks.sorting_settings.disabled": "§c禁用",
+  "enum.bebooks.tooltip_settings.enabled": "§a永久显示",
+  "enum.bebooks.tooltip_settings.on_shift": "§a按住 Shift",
+  "enum.bebooks.tooltip_settings.disabled": "§c永不显示"
+}
