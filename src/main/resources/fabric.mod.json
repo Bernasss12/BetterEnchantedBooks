@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Better Enchanted Books",
-  "description": "Why would you need to read this? You already know what this mod does!",
+  "description": "Colors the stripe on enchanted books depending on the enchantment, sorts tooltips and shows which items each enchantment can be applied to on the tooltip.",
   "authors": [
     "Bernasss12"
   ],
