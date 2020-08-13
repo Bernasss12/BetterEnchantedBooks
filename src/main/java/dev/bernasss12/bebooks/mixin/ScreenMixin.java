@@ -14,7 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.StringRenderable;
+import net.minecraft.text.OrderedText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -54,9 +54,9 @@ public abstract class ScreenMixin extends DrawableHelper {
     @Inject(at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V",
             ordinal = 0),
-            method = "renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V"
+            method = "Lnet/minecraft/client/gui/screen/Screen;renderOrderedTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V"
     )
-    private void appendRenderTooltipAfterInvokeImmediateDraw(MatrixStack matrices, List<? extends StringRenderable> text, int x, int y, CallbackInfo info) {
+    private void appendRenderTooltipAfterInvokeImmediateDraw(MatrixStack matrices, List<? extends OrderedText> text, int x, int y, CallbackInfo info) {
         if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
             switch (BEBooksConfig.tooltipSetting) {
                 case ENABLED:
@@ -71,7 +71,7 @@ public abstract class ScreenMixin extends DrawableHelper {
         }
     }
 
-    protected void drawTooltipIcons(List<? extends StringRenderable> text, int x, int y) {
+    protected void drawTooltipIcons(List<? extends OrderedText> text, int x, int y) {
         int maxLength = this.textRenderer.getWidth(text.stream().max(Comparator.comparing(line -> this.textRenderer.getWidth(line))).get());
         int translatedX = x + 12;
         int translatedY = y - 12;
