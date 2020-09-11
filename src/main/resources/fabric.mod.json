@@ -9,8 +9,9 @@
     "Bernasss12"
   ],
   "contact": {
-    "homepage": "https://github.com/Bernasss12/BetterEnchantedBooks",
-    "sources": "https://github.com/Bernasss12/BetterEnchantedBooks"
+    "homepage": "https://github.com/Bernasss12",
+    "sources": "https://github.com/Bernasss12/BetterEnchantedBooks",
+    "issues": "https://github.com/Bernasss12/BetterEnchantedBooks/issues"
   },
 
   "license": "Unlicense",
@@ -31,6 +32,6 @@
   "depends": {
     "fabricloader": ">=0.9.0",
     "fabric": "*",
-    "minecraft": "1.16.2"
+    "minecraft": ">=1.16.2"
   }
 }
