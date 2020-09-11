@@ -26,3 +26,6 @@ run/
 
 # krita files
 .kra
+logs/
+
+*.kra
