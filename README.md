@@ -7,7 +7,7 @@ I'll try to keep everything as customizable as possible.
 
 ## Features
 
-![SampleImage](https://user-images.githubusercontent.com/6233500/77241366-0265cf00-6be9-11ea-9ef4-d4b667513b75.png)
+![SampleImage](https://user-images.githubusercontent.com/6233500/92848405-1b09b180-f3e2-11ea-9725-799fc4a7ae78.png)
 
  - Sort the enchantments in a tooltip, you can manually make your desired order or just alphabetically sort it;
  - Assign custom colors to each enchantment and those will display in as the color of the strip on Enchanted Books.
