@@ -6,9 +6,11 @@ import dev.bernasss12.bebooks.client.gui.BEBooksConfig;
 import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
@@ -57,16 +59,19 @@ public abstract class ScreenMixin extends DrawableHelper {
             method = "Lnet/minecraft/client/gui/screen/Screen;renderOrderedTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V"
     )
     private void appendRenderTooltipAfterInvokeImmediateDraw(MatrixStack matrices, List<? extends OrderedText> text, int x, int y, CallbackInfo info) {
-        if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
-            switch (BEBooksConfig.tooltipSetting) {
-                case ENABLED:
-                    drawTooltipIcons(text, x, y);
-                    break;
-                case ON_SHIFT:
-                    if (Screen.hasShiftDown()) drawTooltipIcons(text, x, y);
-                    break;
-                case DISABLED:
-                    break;
+        // This might be redundant but I can't trust everything in minecraft to make sense so this will only run on screens that extend HandledScreen to prevent any kind of random NPEs
+        if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
+            if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
+                switch (BEBooksConfig.tooltipSetting) {
+                    case ENABLED:
+                        drawTooltipIcons(text, x, y);
+                        break;
+                    case ON_SHIFT:
+                        if (Screen.hasShiftDown()) drawTooltipIcons(text, x, y);
+                        break;
+                    case DISABLED:
+                        break;
+                }
             }
         }
     }
@@ -109,6 +114,6 @@ public abstract class ScreenMixin extends DrawableHelper {
         int scaledY = (int) (y / scale);
         RenderSystem.scalef(scale, scale, 1.0f);
         itemRenderer.renderGuiItemIcon(stack, scaledX - 8, scaledY);
-        RenderSystem.scalef(1 / scale, 1/ scale, 1.0f);
+        RenderSystem.scalef(1 / scale, 1 / scale, 1.0f);
     }
 }
