@@ -1,0 +1,18 @@
+{
+  "category.bebooks.sorting_settings": "Açıklamadaki Büyü Sıralaması",
+  "category.bebooks.book_coloring_settings": "Kitap Renklendirme Ayarları",
+  "category.bebooks.tooltip_settings": "Açıklama Simgesi Ayarları",
+  "entry.bebooks.sorting_settings.sorting_mode": "Açıklamada Sıralama Modu:",
+  "entry.bebooks.sorting_settings.keep_curses_at_bottom": "Lanetleri Açıklamanın En Altına Sabitle",
+  "entry.bebooks.book_coloring_settings.active": "Renkli Kitap",
+  "entry.bebooks.book_coloring_settings.color_mode": "Renkli Kitap Nasıl Seçilsin:",
+  "entry.bebooks.book_coloring_settings.curse_color_override_others": "Lanet Rengi Diğer Renklere Baskın",
+  "subcategory.bebooks.book_coloring_settings.enchantment_color": "Büyü Renkleri",
+  "entry.bebooks.tooltip_settings.tooltip_mode": "Uygulanabilir Açıklama Simge Modu",
+  "enum.bebooks.sorting_settings.alphabetically": "§aAlfabetik",
+  "enum.bebooks.sorting_settings.custom": "§aÖzel Sıralama",
+  "enum.bebooks.sorting_settings.disabled": "§cDevre Dışı",
+  "enum.bebooks.tooltip_settings.enabled": "§aHer Zaman",
+  "enum.bebooks.tooltip_settings.on_shift": "§aShift Basılıyken",
+  "enum.bebooks.tooltip_settings.disabled": "§cAsla"
+}
