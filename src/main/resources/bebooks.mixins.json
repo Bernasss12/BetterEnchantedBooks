@@ -4,6 +4,7 @@
   "package": "dev.bernasss12.bebooks.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
+    "EnchantedBookItemMixin",
     "ItemStackMixin",
     "ScreenMixin",
     "TitleScreenMixin"

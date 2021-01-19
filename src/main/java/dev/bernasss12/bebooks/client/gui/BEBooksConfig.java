@@ -75,8 +75,12 @@ public class BEBooksConfig {
     // Default minecraft book color, sorta
     public static final int DEFAULT_BOOK_STRIP_COLOR = 0xc5133a;
 
+    // Defines whether the enchanted book has a visible glint or not. Default is NOT
+    public static Boolean glintSetting;
+    private static final Boolean DEFAULT_GLINT_SETTING = false;
+
     public static void loadEnchantmentData() {
-        File file = new File(FabricLoader.getInstance().getConfigDirectory(), "bebooks/enchantment_data.json");
+        File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), "bebooks/enchantment_data.json");
         Gson gson = new Gson();
         mappedEnchantmentTargets = new HashMap<>();
         // Try and read the file and parse the json.
@@ -136,6 +140,8 @@ public class BEBooksConfig {
             colorPrioritySetting = DEFAULT_COLOR_PRIORITY_SETTING;
             // Tooltip Settings
             tooltipSetting = DEFAULT_TOOLTIP_SETTING;
+            // Enchantment Glint
+            glintSetting = DEFAULT_GLINT_SETTING;
             loadEnchantmentData();
             if (!file.exists()) {
                 saveConfig();
@@ -177,6 +183,8 @@ public class BEBooksConfig {
             }
             // Tooltip Settings
             tooltipSetting = TooltipSetting.fromString(properties.getProperty("tooltip_mode"));
+            // Enchantment Glint
+            glintSetting = Boolean.parseBoolean(properties.getProperty("enchanted_book_glint"));
             saveConfig();
         } catch (Exception e) {
             e.printStackTrace();
@@ -216,6 +224,8 @@ public class BEBooksConfig {
             properties.setProperty("color_mode", colorPrioritySetting.toString());
             // Tooltip Settings
             properties.setProperty("tooltip_mode", tooltipSetting.toString());
+            // Enchantment Glint
+            properties.setProperty("enchanted_book_glint", glintSetting.toString());
             saveEnchantmentData();
             properties.store(writer, null);
             writer.close();
@@ -230,6 +240,8 @@ public class BEBooksConfig {
             colorPrioritySetting = DEFAULT_COLOR_PRIORITY_SETTING;
             // Tooltip Setting
             tooltipSetting = DEFAULT_TOOLTIP_SETTING;
+            // Enchantment Glint
+            glintSetting = DEFAULT_GLINT_SETTING;
             saveEnchantmentData();
         }
     }
@@ -237,6 +249,8 @@ public class BEBooksConfig {
     public static ConfigBuilder getConfigScreen() {
         // Base config builder
         ConfigBuilder builder = ConfigBuilder.create();
+        builder.setDefaultBackgroundTexture(new Identifier("minecraft:textures/block/spruce_planks.png"));
+        builder.setGlobalized(true);
         // Creating categories
         ConfigCategory sortingCategory = builder.getOrCreateCategory(new TranslatableText("category.bebooks.sorting_settings"));
         ConfigCategory bookColoring = builder.getOrCreateCategory(new TranslatableText("category.bebooks.book_coloring_settings"));
@@ -247,8 +261,8 @@ public class BEBooksConfig {
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
         sortingCategory.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.sorting_settings.sorting_mode"), SortingSetting.class, sortingSetting).setDefaultValue(DEFAULT_SORTING_SETTING).setSaveConsumer(setting -> sortingSetting = setting).build());
         sortingCategory.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.sorting_settings.keep_curses_at_bottom"), doKeepCursesBelow).setSaveConsumer((doKeepCursesBelowInput) -> doKeepCursesBelow = doKeepCursesBelowInput).build());
-
         // Coloring settings page
+        bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_glint_settings.active"), glintSetting).setSaveConsumer((showEnchantmentGlint) -> glintSetting = showEnchantmentGlint).build());
         bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.active"), doColorBooks).setSaveConsumer((doColorBooksInput) -> doColorBooks = doColorBooksInput).build());
         bookColoring.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.book_coloring_settings.color_mode"), SortingSetting.class, colorPrioritySetting).setDefaultValue(DEFAULT_COLOR_PRIORITY_SETTING).setSaveConsumer(setting -> colorPrioritySetting = setting).build());
         bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.curse_color_override_others"), doCurseColorOverride).setSaveConsumer((doColorOverrideWhenCursedInput) -> doCurseColorOverride = doColorOverrideWhenCursedInput).build());
