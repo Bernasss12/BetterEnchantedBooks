@@ -33,7 +33,7 @@ public class ModConstants {
     // Default enchantment colors as suggested by twusya on https://www.curseforge.com/minecraft/mc-mods/better-enchanted-books#c47
     public static final Map<Enchantment, Integer> DEFAULT_ENCHANTMENT_COLORS = new HashMap<>();
 
-    public static void populateDefaultColorsMap(){
+    public static void populateDefaultColorsMap() {
         DEFAULT_ENCHANTMENT_COLORS.put(Enchantments.AQUA_AFFINITY, 0x6e7af7);
         DEFAULT_ENCHANTMENT_COLORS.put(Enchantments.BANE_OF_ARTHROPODS, 0x0f5160);
         DEFAULT_ENCHANTMENT_COLORS.put(Enchantments.BLAST_PROTECTION, 0x442e62);

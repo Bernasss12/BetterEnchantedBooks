@@ -245,7 +245,7 @@ public class ModConfig {
         bookColoring.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.book_coloring_settings.color_mode"), SortingSetting.class, colorPrioritySetting).setDefaultValue(DEFAULT_COLOR_PRIORITY_SETTING).setSaveConsumer(setting -> colorPrioritySetting = setting).build());
         bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.curse_color_override_others"), doCurseColorOverride).setSaveConsumer((doColorOverrideWhenCursedInput) -> doCurseColorOverride = doColorOverrideWhenCursedInput).build());
         ArrayList<AbstractConfigListEntry> enchantments = new ArrayList<>();
-        for (Map.Entry<String, EnchantmentData> enchantmentDataEntry : enchantmentDataMap.entrySet()){
+        for (Map.Entry<String, EnchantmentData> enchantmentDataEntry : enchantmentDataMap.entrySet()) {
             enchantments.add(entryBuilder.startColorField(new LiteralText(enchantmentDataEntry.getValue().translatedName), mappedEnchantmentColors.get(enchantmentDataEntry.getKey())).setDefaultValue(DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchantmentDataEntry.getValue().enchantment, DEFAULT_BOOK_STRIP_COLOR)).setSaveConsumer((guiEntryColor) ->
             {
                 EnchantmentData data = enchantmentDataMap.get(enchantmentDataEntry.getKey());
@@ -324,7 +324,7 @@ public class ModConfig {
         public Enchantment enchantment;
 
         public EnchantmentData(Enchantment enchantment, String translatedName, int index, int color) {
-            super( index, color);
+            super(index, color);
             this.enchantment = enchantment;
             this.translatedName = translatedName;
         }
@@ -337,17 +337,17 @@ public class ModConfig {
         }
     }
 
-    private static HashMap<String, EnchantmentData> fromStoredData(Map<String, StoredEnchantmentData> storedData){
+    private static HashMap<String, EnchantmentData> fromStoredData(Map<String, StoredEnchantmentData> storedData) {
         HashMap<String, EnchantmentData> result = new HashMap<>();
-        for (Map.Entry<String, StoredEnchantmentData> entry : storedData.entrySet()){
+        for (Map.Entry<String, StoredEnchantmentData> entry : storedData.entrySet()) {
             result.putIfAbsent(entry.getKey(), new EnchantmentData(entry.getValue(), entry.getKey()));
         }
         return result;
     }
 
-    private static HashMap<String, StoredEnchantmentData> toStoredData(Map<String, EnchantmentData> data){
+    private static HashMap<String, StoredEnchantmentData> toStoredData(Map<String, EnchantmentData> data) {
         HashMap<String, StoredEnchantmentData> result = new HashMap<>();
-        for (Map.Entry<String, EnchantmentData> entry : data.entrySet()){
+        for (Map.Entry<String, EnchantmentData> entry : data.entrySet()) {
             result.putIfAbsent(entry.getKey(), new StoredEnchantmentData(entry.getValue()));
         }
         return result;
