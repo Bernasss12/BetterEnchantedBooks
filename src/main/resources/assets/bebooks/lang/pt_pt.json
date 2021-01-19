@@ -1,0 +1,19 @@
+{
+  "category.bebooks.sorting_settings": "Opções da ordenação das tooltips",
+  "category.bebooks.book_coloring_settings": "Opções de coloração dos livros",
+  "category.bebooks.tooltip_settings": "Opções de ícones",
+  "entry.bebooks.sorting_settings.sorting_mode": "Modo de organização da tooltip:",
+  "entry.bebooks.sorting_settings.keep_curses_at_bottom": "Forçar maldições no fim da lista",
+  "entry.bebooks.book_glint_settings.active": "Brilho de encantamento nos livros",
+  "entry.bebooks.book_coloring_settings.active": "Colorar livros",
+  "entry.bebooks.book_coloring_settings.color_mode": "Como escolher a cor do livro:",
+  "entry.bebooks.book_coloring_settings.curse_color_override_others": "Cor da maldição sobrepõe cores restantes",
+  "subcategory.bebooks.book_coloring_settings.enchantment_color": "Cores dos encantamentos",
+  "entry.bebooks.tooltip_settings.tooltip_mode": "Modo de demonstração de itens aplicavéis do encantamento",
+  "enum.bebooks.sorting_settings.alphabetically": "§aAlfabeticamente",
+  "enum.bebooks.sorting_settings.custom": "§aOrdem personalizada",
+  "enum.bebooks.sorting_settings.disabled": "§cDesativado",
+  "enum.bebooks.tooltip_settings.enabled": "§aSempre",
+  "enum.bebooks.tooltip_settings.on_shift": "§aShift",
+  "enum.bebooks.tooltip_settings.disabled": "§cNunca"
+}
