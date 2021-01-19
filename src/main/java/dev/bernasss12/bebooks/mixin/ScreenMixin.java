@@ -58,16 +58,16 @@ public abstract class ScreenMixin extends DrawableHelper {
             ordinal = 0),
             method = "Lnet/minecraft/client/gui/screen/Screen;renderOrderedTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V"
     )
-    private void appendRenderTooltipAfterInvokeImmediateDraw(MatrixStack matrices, List<? extends OrderedText> text, int x, int y, CallbackInfo info) {
+    private void appendRenderTooltipAfterInvokeImmediateDraw(MatrixStack matrices, List<? extends OrderedText> list, int x, int y, CallbackInfo ci) {
         // This might be redundant but I can't trust everything in minecraft to make sense so this will only run on screens that extend HandledScreen to prevent any kind of random NPEs
         if (MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
                 switch (ModConfig.tooltipSetting) {
                     case ENABLED:
-                        drawTooltipIcons(text, x, y);
+                        drawTooltipIcons(list, x, y);
                         break;
                     case ON_SHIFT:
-                        if (Screen.hasShiftDown()) drawTooltipIcons(text, x, y);
+                        if (Screen.hasShiftDown()) drawTooltipIcons(list, x, y);
                         break;
                     case DISABLED:
                         break;
@@ -98,10 +98,14 @@ public abstract class ScreenMixin extends DrawableHelper {
         TooltipDrawerHelper.TooltipQueuedEntry entry = BetterEnchantedBooks.cachedTooltipIcons.get(BetterEnchantedBooks.enchantedItemStack.get());
         translatedY += entry.getFirstLine() * 10 + 12;
         for (Enchantment enchantment : entry.getList()) {
-            int translatedLineX = translatedX + 4;
-            for (ItemStack icon : TooltipDrawerHelper.enchantmentIconListMap.get(enchantment)) {
-                drawScaledItem(itemRenderer, icon, translatedLineX, translatedY, 0.5f);
-                translatedLineX += 8;
+            int xOffset = 4;
+            for (ItemStack icon : TooltipDrawerHelper.getAndComputeIfAbsent(enchantment)) {
+                if(xOffset > maxLength){
+                    translatedY += MinecraftClient.getInstance().textRenderer.fontHeight;
+                    xOffset = 4;
+                }
+                drawScaledItem(itemRenderer, icon, translatedX + xOffset, translatedY, 0.5f);
+                xOffset += 8;
             }
             translatedY += 20;
         }

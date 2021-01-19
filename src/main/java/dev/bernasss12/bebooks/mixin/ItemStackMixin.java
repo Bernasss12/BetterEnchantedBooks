@@ -15,13 +15,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Mixin(ItemStack.class)
@@ -46,6 +46,7 @@ public abstract class ItemStackMixin {
                             BetterEnchantedBooks.cachedTooltipIcons.putIfAbsent(BetterEnchantedBooks.enchantedItemStack.get(), new TooltipDrawerHelper.TooltipQueuedEntry(tooltip.size(), enchantments));
                         }
                     }
+                    TooltipDrawerHelper.currentTooltipWidth = MinecraftClient.getInstance().textRenderer.getWidth(tooltip.stream().max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line))).get());
                 } catch (Exception ignored) {
                 }
             }
@@ -59,10 +60,10 @@ public abstract class ItemStackMixin {
             if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
                 switch (ModConfig.tooltipSetting) {
                     case ENABLED:
-                        tooltip.add(new LiteralText(""));
+                        tooltip.addAll(TooltipDrawerHelper.getSpacerLines(enchantment, TooltipDrawerHelper.currentTooltipWidth));
                         break;
                     case ON_SHIFT:
-                        if (Screen.hasShiftDown()) tooltip.add(new LiteralText(""));
+                        if (Screen.hasShiftDown()) tooltip.addAll(TooltipDrawerHelper.getSpacerLines(enchantment, TooltipDrawerHelper.currentTooltipWidth));
                         break;
                     case DISABLED:
                         break;

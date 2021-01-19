@@ -5,45 +5,52 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TooltipDrawerHelper {
 
     public static boolean isEnchantmentIconListMapPopulated = false;
+    public static int currentTooltipWidth = 0;
     public static Map<Enchantment, List<ItemStack>> enchantmentIconListMap;
 
     public static void populateEnchantmentIconList() {
         TooltipDrawerHelper.enchantmentIconListMap = new HashMap<>();
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
-            List<ItemStack> list = new ArrayList<>();
-            for (ItemStack icon : ModConfig.checkedItemsList) {
-                if (enchantment.isAcceptableItem(icon)) list.add(icon);
-            }
-            TooltipDrawerHelper.enchantmentIconListMap.put(enchantment, list);
+            addEnchantmentToList(enchantment);
         }
         isEnchantmentIconListMapPopulated = true;
     }
 
-    public static List<ItemStack> get(Enchantment enchantment) {
-        return enchantmentIconListMap.get(enchantment);
-    }
-
-    /*
-    public static List<Identifier> addIfAbsent(List<Identifier> list, Identifier identifier) {
-        if (!list.contains(identifier)) list.add(identifier);
+    private static List<ItemStack> addEnchantmentToList(Enchantment enchantment) {
+        List<ItemStack> list = new ArrayList<>();
+        for (ItemStack icon : ModConfig.checkedItemsList) {
+            if (enchantment.isAcceptableItem(icon)) list.add(icon);
+        }
+        enchantmentIconListMap.put(enchantment, list);
         return list;
     }
-    */
+
+    public static List<ItemStack> getAndComputeIfAbsent(Enchantment enchantment) {
+        if (enchantmentIconListMap.containsKey(enchantment)) return enchantmentIconListMap.get(enchantment);
+        else return addEnchantmentToList(enchantment);
+    }
+
+    public static List<LiteralText> getSpacerLines(Enchantment enchantment, int tooltipWidth) {
+        List<LiteralText> spacers = new ArrayList<>();
+        int iconCount = enchantmentIconListMap.getOrDefault(enchantment, Collections.emptyList()).size();
+        int iconsWidth = iconCount * 8;
+        int extraLineCount = iconsWidth / tooltipWidth;
+        for (int i = 0; i < 1 + extraLineCount; i++) spacers.add(new LiteralText(" "));
+        return spacers;
+    }
 
     public static class TooltipQueuedEntry {
-        private int firstLine;
-        private List<Enchantment> enchantments;
+        private final int firstLine;
+        private final List<Enchantment> enchantments;
 
         public TooltipQueuedEntry(int firstLine, ListTag enchantments) {
             this.firstLine = firstLine;
