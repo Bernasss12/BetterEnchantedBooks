@@ -2,7 +2,7 @@ package dev.bernasss12.bebooks.mixin;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.bernasss12.bebooks.BetterEnchantedBooks;
-import dev.bernasss12.bebooks.client.gui.BEBooksConfig;
+import dev.bernasss12.bebooks.client.gui.ModConfig;
 import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -62,7 +62,7 @@ public abstract class ScreenMixin extends DrawableHelper {
         // This might be redundant but I can't trust everything in minecraft to make sense so this will only run on screens that extend HandledScreen to prevent any kind of random NPEs
         if (MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
-                switch (BEBooksConfig.tooltipSetting) {
+                switch (ModConfig.tooltipSetting) {
                     case ENABLED:
                         drawTooltipIcons(text, x, y);
                         break;

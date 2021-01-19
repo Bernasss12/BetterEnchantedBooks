@@ -1,6 +1,6 @@
 package dev.bernasss12.bebooks;
 
-import dev.bernasss12.bebooks.client.gui.BEBooksConfig;
+import dev.bernasss12.bebooks.client.gui.ModConfig;
 import io.github.prospector.modmenu.api.ConfigScreenFactory;
 import io.github.prospector.modmenu.api.ModMenuApi;
 import net.fabricmc.api.EnvType;
@@ -15,6 +15,6 @@ public class ModMenuIntegration implements ModMenuApi {
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> BEBooksConfig.getConfigScreen().build();
+        return parent -> ModConfig.getConfigScreen().build();
     }
 }

@@ -1,7 +1,7 @@
 package dev.bernasss12.bebooks.mixin;
 
 import dev.bernasss12.bebooks.BetterEnchantedBooks;
-import dev.bernasss12.bebooks.client.gui.BEBooksConfig;
+import dev.bernasss12.bebooks.client.gui.ModConfig;
 import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import dev.bernasss12.bebooks.util.NBTUtils;
 import net.fabricmc.api.EnvType;
@@ -35,10 +35,10 @@ public abstract class ItemStackMixin {
     @Inject(at = @At(value = "HEAD"), method = "appendEnchantments")
     private static void appendEnchantmentsHead(List<Text> tooltip, ListTag enchantments, CallbackInfo info) {
         if (MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
-            if (BEBooksConfig.configsFirstLoaded && BEBooksConfig.sortingSetting != BEBooksConfig.SortingSetting.DISABLED) {
+            if (ModConfig.configsFirstLoaded && ModConfig.sortingSetting != ModConfig.SortingSetting.DISABLED) {
                 ListTag sortedEnchantments;
                 try {
-                    sortedEnchantments = NBTUtils.sort(enchantments, BEBooksConfig.sortingSetting);
+                    sortedEnchantments = NBTUtils.sort(enchantments, ModConfig.sortingSetting);
                     enchantments.clear();
                     enchantments.addAll(sortedEnchantments);
                     if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
@@ -57,7 +57,7 @@ public abstract class ItemStackMixin {
         // This will only run on HandledScreen subclasses because there is no need for it run elsewhere and also it can cause NPE crashes.
         if (MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
-                switch (BEBooksConfig.tooltipSetting) {
+                switch (ModConfig.tooltipSetting) {
                     case ENABLED:
                         tooltip.add(new LiteralText(""));
                         break;

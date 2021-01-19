@@ -22,7 +22,7 @@ public class TooltipDrawerHelper {
         TooltipDrawerHelper.enchantmentIconListMap = new HashMap<>();
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             List<ItemStack> list = new ArrayList<>();
-            for (ItemStack icon : BEBooksConfig.checkedItemsList) {
+            for (ItemStack icon : ModConfig.checkedItemsList) {
                 if (enchantment.isAcceptableItem(icon)) list.add(icon);
             }
             TooltipDrawerHelper.enchantmentIconListMap.put(enchantment, list);

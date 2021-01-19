@@ -1,6 +1,6 @@
 package dev.bernasss12.bebooks.util;
 
-import dev.bernasss12.bebooks.client.gui.BEBooksConfig;
+import dev.bernasss12.bebooks.client.gui.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 @Environment(EnvType.CLIENT)
 public final class NBTUtils {
 
-    public static ListTag sort(ListTag listTag, BEBooksConfig.SortingSetting mode) throws Exception {
-        return sort(listTag, mode, BEBooksConfig.doKeepCursesBelow);
+    public static ListTag sort(ListTag listTag, ModConfig.SortingSetting mode) throws Exception {
+        return sort(listTag, mode, ModConfig.doKeepCursesBelow);
     }
 
     /**
@@ -26,7 +26,7 @@ public final class NBTUtils {
      *
      * @param mode true for Alphabelical sorting, false for priority index sorting.
      **/
-    public static ListTag sort(ListTag listTag, BEBooksConfig.SortingSetting mode, boolean cursesBelow) throws Exception {
+    public static ListTag sort(ListTag listTag, ModConfig.SortingSetting mode, boolean cursesBelow) throws Exception {
         List<EnchantmentCompound> sortedEnchantments = fromListTag(listTag);
         // Sorting
         switch (mode) {
@@ -72,10 +72,10 @@ public final class NBTUtils {
         return !result.isEmpty();
     }
 
-    public static String getPriorityEnchantmentId(ListTag listTag, BEBooksConfig.SortingSetting mode) {
+    public static String getPriorityEnchantmentId(ListTag listTag, ModConfig.SortingSetting mode) {
         try {
             List<EnchantmentCompound> enchantmentCompounds = fromListTag(sort(listTag, mode, true));
-            if (BEBooksConfig.doCurseColorOverride && hasCurses(listTag)) {
+            if (ModConfig.doCurseColorOverride && hasCurses(listTag)) {
                 return ((CompoundTag) listTag.get(listTag.size() - 1)).getString("id");
             }
             return !enchantmentCompounds.isEmpty() ? enchantmentCompounds.get(0).id : "";
@@ -107,12 +107,12 @@ public final class NBTUtils {
             this.id = compound.getString("id");
             this.lvl = compound.getShort("lvl");
             this.isCursed = Objects.requireNonNull(Registry.ENCHANTMENT.get(new Identifier(id))).isCursed();
-            if (BEBooksConfig.enchantmentDataMap.containsKey(id)) {
-                this.translatedName = BEBooksConfig.enchantmentDataMap.get(id).translatedName;
-                this.index = BEBooksConfig.enchantmentDataMap.get(id).orderIndex;
+            if (ModConfig.enchantmentDataMap.containsKey(id)) {
+                this.translatedName = ModConfig.enchantmentDataMap.get(id).translatedName;
+                this.index = ModConfig.enchantmentDataMap.get(id).orderIndex;
             } else {
                 this.translatedName = Registry.ENCHANTMENT.get(new Identifier(id)).getName(lvl).asString();
-                this.index = BEBooksConfig.enchantmentDataMap.size();
+                this.index = ModConfig.enchantmentDataMap.size();
             }
         }
 
