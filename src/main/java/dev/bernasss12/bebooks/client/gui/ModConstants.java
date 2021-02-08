@@ -27,7 +27,8 @@ public class ModConstants {
             new ItemStack(Items.DIAMOND_CHESTPLATE),
             new ItemStack(Items.DIAMOND_LEGGINGS),
             new ItemStack(Items.DIAMOND_BOOTS),
-            new ItemStack(Items.ELYTRA)
+            new ItemStack(Items.ELYTRA),
+            new ItemStack(Items.SHIELD)
     );
 
     // Default enchantment colors as suggested by twusya on https://www.curseforge.com/minecraft/mc-mods/better-enchanted-books#c47
