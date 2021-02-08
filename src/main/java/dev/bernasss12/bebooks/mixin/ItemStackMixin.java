@@ -53,6 +53,13 @@ public abstract class ItemStackMixin {
         }
     }
 
+    @Inject(at = @At(value = "HEAD"), method = "net/minecraft/item/ItemStack.method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
+    private static void method17869Head(List<Text> tooltip, CompoundTag tag, Enchantment enchantment, CallbackInfo info) {
+        if(ModConfig.doShowEnchantmentMaxLevel){
+            BetterEnchantedBooks.tooltipName.set(true);
+        }
+    }
+
     @Inject(at = @At(value = "TAIL"), method = "net/minecraft/item/ItemStack.method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
     private static void method17869Tail(List<Text> tooltip, CompoundTag tag, Enchantment enchantment, CallbackInfo info) {
         // This will only run on HandledScreen subclasses because there is no need for it run elsewhere and also it can cause NPE crashes.

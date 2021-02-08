@@ -9,6 +9,7 @@
   "entry.bebooks.book_coloring_settings.color_mode": "Como escolher a cor do livro:",
   "entry.bebooks.book_coloring_settings.curse_color_override_others": "Cor da maldição sobrepõe cores restantes",
   "subcategory.bebooks.book_coloring_settings.enchantment_color": "Cores dos encantamentos",
+  "entry.bebooks.tooltip_settings.show_enchantment_max_level": "Mostrar o nível máximo do encantamento",
   "entry.bebooks.tooltip_settings.tooltip_mode": "Modo de demonstração de itens aplicavéis do encantamento",
   "enum.bebooks.sorting_settings.alphabetically": "§aAlfabeticamente",
   "enum.bebooks.sorting_settings.custom": "§aOrdem personalizada",

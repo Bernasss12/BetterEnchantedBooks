@@ -13,6 +13,8 @@ import java.util.Map;
 public class ModConstants {
     protected static final int SETTINGS_VERSION = 2;
 
+    protected static final boolean DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL = false;
+
     protected static final List<ItemStack> DEFAULT_CHECKED_ITEMS_LIST = Arrays.asList(
             new ItemStack(Items.DIAMOND_SWORD),
             new ItemStack(Items.DIAMOND_PICKAXE),

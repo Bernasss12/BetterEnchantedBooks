@@ -37,6 +37,9 @@ public class ModConfig {
     public static Map<String, Integer> mappedEnchantmentIndices;
     public static Map<String, EnchantmentTarget> mappedEnchantmentTargets;
 
+    // Tooltip information settings
+    public static boolean doShowEnchantmentMaxLevel = DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL;
+
     // Tooltip Icon Settings
     public static List<ItemStack> checkedItemsList = DEFAULT_CHECKED_ITEMS_LIST;
 
@@ -47,6 +50,7 @@ public class ModConfig {
     // Sorting Settings
     public static SortingSetting sortingSetting;
     public static boolean doKeepCursesBelow;
+
     // Coloring Settings
     public static boolean doColorBooks;
     public static boolean doCurseColorOverride;
@@ -108,7 +112,6 @@ public class ModConfig {
         int version;
         try {
             if (file.getParentFile().mkdirs()) System.out.println("[BEBooks] Config folder created!");
-            // ThreadLocal
             // Sorting Settings
             sortingSetting = DEFAULT_SORTING_SETTING;
             doKeepCursesBelow = DEFAULT_KEEP_CURSES_BELOW;
@@ -117,6 +120,7 @@ public class ModConfig {
             doCurseColorOverride = DEFAULT_CURSE_COLOR_OVERRIDE; // TODO implement
             colorPrioritySetting = DEFAULT_COLOR_PRIORITY_SETTING;
             // Tooltip Settings
+            doShowEnchantmentMaxLevel = DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL;
             tooltipSetting = DEFAULT_TOOLTIP_SETTING;
             // Enchantment Glint
             glintSetting = DEFAULT_GLINT_SETTING;
@@ -160,6 +164,7 @@ public class ModConfig {
                 colorPrioritySetting = SortingSetting.fromString(properties.getProperty("color_mode"));
             }
             // Tooltip Settings
+            doShowEnchantmentMaxLevel = Boolean.parseBoolean(properties.getProperty("show_max_enchantment_level"));
             tooltipSetting = TooltipSetting.fromString(properties.getProperty("tooltip_mode"));
             // Enchantment Glint
             glintSetting = Boolean.parseBoolean(properties.getProperty("enchanted_book_glint"));
@@ -174,6 +179,7 @@ public class ModConfig {
             doCurseColorOverride = DEFAULT_CURSE_COLOR_OVERRIDE; // TODO implement
             colorPrioritySetting = DEFAULT_COLOR_PRIORITY_SETTING;
             // Tooltip settings
+            doShowEnchantmentMaxLevel = DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL;
             tooltipSetting = DEFAULT_TOOLTIP_SETTING;
             loadEnchantmentData();
             try {
@@ -201,6 +207,7 @@ public class ModConfig {
             properties.setProperty("override_curse_color", doCurseColorOverride + "");
             properties.setProperty("color_mode", colorPrioritySetting.toString());
             // Tooltip Settings
+            properties.setProperty("show_max_enchantment_level", doShowEnchantmentMaxLevel + "");
             properties.setProperty("tooltip_mode", tooltipSetting.toString());
             // Enchantment Glint
             properties.setProperty("enchanted_book_glint", glintSetting.toString());
@@ -214,9 +221,10 @@ public class ModConfig {
             doKeepCursesBelow = DEFAULT_KEEP_CURSES_BELOW;
             // Coloring Settings
             doColorBooks = DEFAULT_COLOR_BOOKS;
-            doCurseColorOverride = DEFAULT_CURSE_COLOR_OVERRIDE; // TODO implement
+            doCurseColorOverride = DEFAULT_CURSE_COLOR_OVERRIDE;
             colorPrioritySetting = DEFAULT_COLOR_PRIORITY_SETTING;
             // Tooltip Setting
+            doShowEnchantmentMaxLevel = DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL;
             tooltipSetting = DEFAULT_TOOLTIP_SETTING;
             // Enchantment Glint
             glintSetting = DEFAULT_GLINT_SETTING;
@@ -256,6 +264,7 @@ public class ModConfig {
         enchantments.sort(Comparator.comparing(entry -> entry.getFieldName().asString()));
         bookColoring.addEntry(entryBuilder.startSubCategory(new TranslatableText("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build());
         // Tooltip settings page
+        tooltipCategory.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.tooltip_settings.show_enchantment_max_level"), doShowEnchantmentMaxLevel).setDefaultValue(DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL).setSaveConsumer((showEnchantmentMaxLevel) -> doShowEnchantmentMaxLevel = showEnchantmentMaxLevel).build());
         tooltipCategory.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.tooltip_settings.tooltip_mode"), TooltipSetting.class, tooltipSetting).setDefaultValue(DEFAULT_TOOLTIP_SETTING).setSaveConsumer(setting -> tooltipSetting = setting).build());
         builder.setSavingRunnable(() -> {
             saveConfig();

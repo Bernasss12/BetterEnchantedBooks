@@ -25,6 +25,7 @@ public class BetterEnchantedBooks implements ClientModInitializer {
     public static Map<ItemStack, TooltipDrawerHelper.TooltipQueuedEntry> cachedTooltipIcons;
 
     public static ThreadLocal<ItemStack> enchantedItemStack;
+    public static ThreadLocal<Boolean> tooltipName;
 
     @Override
     public void onInitializeClient() {
@@ -33,6 +34,8 @@ public class BetterEnchantedBooks implements ClientModInitializer {
         cachedTooltipIcons = new HashMap<>();
         enchantedItemStack = new ThreadLocal<>();
         enchantedItemStack.set(ItemStack.EMPTY);
+        tooltipName = new ThreadLocal<>();
+        tooltipName.set(false);
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? getColorFromEnchantmentList(stack) : -1, Items.ENCHANTED_BOOK);
     }
 

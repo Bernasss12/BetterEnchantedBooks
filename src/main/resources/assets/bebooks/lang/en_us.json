@@ -9,6 +9,7 @@
   "entry.bebooks.book_coloring_settings.color_mode": "How To Choose Book Color:",
   "entry.bebooks.book_coloring_settings.curse_color_override_others": "Curse Color Overrides Others",
   "subcategory.bebooks.book_coloring_settings.enchantment_color": "Enchantment Colors",
+  "entry.bebooks.tooltip_settings.show_enchantment_max_level": "Show Max Enchantment Level",
   "entry.bebooks.tooltip_settings.tooltip_mode": "Applicable Tooltip Icons Mode",
   "enum.bebooks.sorting_settings.alphabetically": "§aAlphabetically",
   "enum.bebooks.sorting_settings.custom": "§aCustom Order",
