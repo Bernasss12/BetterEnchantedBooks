@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Mixin(Screen.class)
@@ -77,7 +76,7 @@ public abstract class ScreenMixin extends DrawableHelper {
     }
 
     protected void drawTooltipIcons(List<? extends OrderedText> text, int x, int y) {
-        int maxLength = this.textRenderer.getWidth(text.stream().max(Comparator.comparing(line -> this.textRenderer.getWidth(line))).get());
+        int maxLength = TooltipDrawerHelper.currentTooltipWidth;
         int translatedX = x + 12;
         int translatedY = y - 12;
         int tooltipHeight = 8;
