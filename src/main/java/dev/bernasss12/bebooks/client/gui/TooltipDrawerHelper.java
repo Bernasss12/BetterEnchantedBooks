@@ -43,7 +43,7 @@ public class TooltipDrawerHelper {
         List<LiteralText> spacers = new ArrayList<>();
         int iconCount = enchantmentIconListMap.getOrDefault(enchantment, Collections.emptyList()).size();
         int iconsWidth = iconCount * 8;
-        int extraLineCount = iconsWidth / tooltipWidth;
+        int extraLineCount = iconsWidth > 0 && tooltipWidth > 0 ? iconsWidth / tooltipWidth : 0;
         for (int i = 0; i < 1 + extraLineCount; i++) spacers.add(new LiteralText(" "));
         return spacers;
     }

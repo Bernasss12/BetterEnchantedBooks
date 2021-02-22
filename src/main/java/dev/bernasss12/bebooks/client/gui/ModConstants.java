@@ -13,7 +13,6 @@ import java.util.Map;
 public class ModConstants {
     protected static final int SETTINGS_VERSION = 2;
 
-    protected static final boolean DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL = false;
 
     protected static final List<ItemStack> DEFAULT_CHECKED_ITEMS_LIST = Arrays.asList(
             new ItemStack(Items.DIAMOND_SWORD),
@@ -81,6 +80,7 @@ public class ModConstants {
         DEFAULT_ENCHANTMENT_COLORS.put(Enchantments.UNBREAKING, 0x5c3350);
     }
 
+    protected static final boolean DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL = false;
     protected static final ModConfig.TooltipSetting DEFAULT_TOOLTIP_SETTING = ModConfig.TooltipSetting.ON_SHIFT;
     protected static final ModConfig.SortingSetting DEFAULT_SORTING_SETTING = ModConfig.SortingSetting.ALPHABETICALLY;
     protected static final boolean DEFAULT_KEEP_CURSES_BELOW = true;
