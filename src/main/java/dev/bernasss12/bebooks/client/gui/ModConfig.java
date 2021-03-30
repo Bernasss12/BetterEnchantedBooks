@@ -20,11 +20,13 @@ import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.util.*;
 
+import static dev.bernasss12.bebooks.BetterEnchantedBooks.LOGGER;
 import static dev.bernasss12.bebooks.client.gui.ModConstants.*;
 
 @Environment(EnvType.CLIENT)
@@ -67,14 +69,14 @@ public class ModConfig {
         mappedEnchantmentTargets = new HashMap<>();
         // Try and read the file and parse the json.
         try {
-            if (file.getParentFile().mkdirs()) System.out.println("[BEBooks] Config folder created!");
+            if (file.getParentFile().mkdirs()) LOGGER.info("Config folder created!");
             Map<String, StoredEnchantmentData> storedEnchantmentDataMap;
             storedEnchantmentDataMap = gson.fromJson(new InputStreamReader(new FileInputStream(file)), new TypeToken<Map<String, StoredEnchantmentData>>() {
             }.getType());
             enchantmentDataMap = fromStoredData(storedEnchantmentDataMap);
         } catch (Exception e) {
+            LOGGER.error("Couldn't load enchantment data", e);
             // In case map parsing fails create a new empty map and populate it with all registered enchantments with the default color.
-            System.err.println(e.toString());
             enchantmentDataMap = new HashMap<>();
         }
         int index = enchantmentDataMap.size();
@@ -102,8 +104,7 @@ public class ModConfig {
             gson.toJson(toStoredData(enchantmentDataMap), writer);
             writer.close();
         } catch (JsonIOException | IOException e) {
-            // Upon failure print the exception.
-            System.err.println(e);
+            LOGGER.error("Couldn't save enchantment data", e);
         }
     }
 
@@ -111,7 +112,7 @@ public class ModConfig {
         File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), "bebooks/config.properties");
         int version;
         try {
-            if (file.getParentFile().mkdirs()) System.out.println("[BEBooks] Config folder created!");
+            if (file.getParentFile().mkdirs()) LOGGER.info("Config folder created!");
             // Sorting Settings
             sortingSetting = DEFAULT_SORTING_SETTING;
             doKeepCursesBelow = DEFAULT_KEEP_CURSES_BELOW;
@@ -329,10 +330,10 @@ public class ModConfig {
     }
 
     public static class EnchantmentData extends StoredEnchantmentData {
-        public String translatedName;
+        @NotNull public String translatedName;
         public Enchantment enchantment;
 
-        public EnchantmentData(Enchantment enchantment, String translatedName, int index, int color) {
+        public EnchantmentData(Enchantment enchantment, @NotNull String translatedName, int index, int color) {
             super(index, color);
             this.enchantment = enchantment;
             this.translatedName = translatedName;
