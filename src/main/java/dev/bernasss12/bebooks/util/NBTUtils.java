@@ -3,136 +3,113 @@ package dev.bernasss12.bebooks.util;
 import dev.bernasss12.bebooks.client.gui.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static dev.bernasss12.bebooks.BetterEnchantedBooks.LOGGER;
 
 @Environment(EnvType.CLIENT)
 public final class NBTUtils {
 
-    public static ListTag sort(ListTag listTag, ModConfig.SortingSetting mode) throws Exception {
-        return sort(listTag, mode, ModConfig.doKeepCursesBelow);
-    }
+    public static ListTag sort(ListTag listTag, ModConfig.SortingSetting mode, boolean cursesBelow) {
+        Comparator<EnchantmentCompound> comparator;
 
-    /**
-     * Turn a ListTag of enchantments into an ArrayList of enchantment data
-     *
-     * @param mode true for Alphabelical sorting, false for priority index sorting.
-     **/
-    public static ListTag sort(ListTag listTag, ModConfig.SortingSetting mode, boolean cursesBelow) throws Exception {
-        List<EnchantmentCompound> sortedEnchantments = fromListTag(listTag);
-        // Sorting
+        if (cursesBelow) {
+            comparator = Comparator.comparing(EnchantmentCompound::isCursed);
+        } else {
+            comparator = Comparator.comparing(e -> 0); // Preserve existing order
+        }
+
         switch (mode) {
             case ALPHABETICALLY:
-                try {
-                    sortedEnchantments.sort(Comparator.comparing(EnchantmentCompound::getTranslatedName));
-                } catch (Exception e) {
-                    System.out.println("Failed to sort ListTag alphabetically: " + listTag);
-                    System.out.println(sortedEnchantments);
-                    throw new Exception(e);
-                }
+                comparator = comparator.thenComparing(EnchantmentCompound::getTranslatedName);
                 break;
             case CUSTOM:
-                try {
-                    sortedEnchantments.sort(Comparator.comparing(EnchantmentCompound::getIndex));
-                } catch (Exception e) {
-                    System.out.println("Failed to sort ListTag via priority index: " + listTag);
-                    System.out.println(sortedEnchantments);
-                    throw new Exception(e);
-                }
+                comparator = comparator.thenComparing(EnchantmentCompound::getIndex);
                 break;
             case DISABLED:
+                // Can still sort by isCursed
                 break;
         }
-        // Curse filtering
-        if (cursesBelow) {
-            List<EnchantmentCompound> curses = new ArrayList<>();
-            // Checks individually for enchantments that are curses.
-            sortedEnchantments.forEach((enchantment) -> {
-                if (enchantment.isCursed()) {
-                    curses.add(enchantment);
-                }
-            });
-            // Remove curses from wherever they are and place them still sorted, but at the bottom.
-            sortedEnchantments.removeAll(curses);
-            sortedEnchantments.addAll(curses);
-        }
-        return toListTag(sortedEnchantments);
+
+        ListTag result = new ListTag();
+        listTag.stream().map(EnchantmentCompound::new).sorted(comparator)
+            .forEachOrdered(tag -> result.add(tag.asCompoundTag()));
+        return result;
     }
 
     public static boolean hasCurses(ListTag listTag) {
-        List<EnchantmentCompound> result = fromListTag(listTag).stream().filter(EnchantmentCompound::isCursed).collect(Collectors.toList());
-        return !result.isEmpty();
+        return listTag.stream().map(EnchantmentCompound::new).anyMatch(EnchantmentCompound::isCursed);
     }
 
     public static String getPriorityEnchantmentId(ListTag listTag, ModConfig.SortingSetting mode) {
-        try {
-            List<EnchantmentCompound> enchantmentCompounds = fromListTag(sort(listTag, mode, true));
-            if (ModConfig.doCurseColorOverride && hasCurses(listTag)) {
-                return ((CompoundTag) listTag.get(listTag.size() - 1)).getString("id");
-            }
-            return !enchantmentCompounds.isEmpty() ? enchantmentCompounds.get(0).id : "";
-        } catch (Exception e) {
-            return "";
+        ListTag sorted = sort(listTag, mode, true);
+        if (sorted.isEmpty()) return "";
+
+        if (ModConfig.doCurseColorOverride && hasCurses(listTag)) {
+            return listTag.getCompound(listTag.size() - 1).getString("id");
         }
-    }
-
-    public static List<EnchantmentCompound> fromListTag(ListTag listTag) {
-        List<EnchantmentCompound> result = new ArrayList<>();
-        listTag.forEach(tag -> result.add(new EnchantmentCompound((CompoundTag) tag)));
-        return result;
-    }
-
-    public static ListTag toListTag(List<EnchantmentCompound> compounds) {
-        ListTag result = new ListTag();
-        compounds.forEach(compound -> result.add(compound.toCompoundTag()));
-        return result;
+        return sorted.getCompound(0).getString("id");
     }
 
     private static class EnchantmentCompound {
-        private String id;
-        private String translatedName;
-        private int lvl;
-        private int index;
-        private boolean isCursed;
+        @NotNull private final CompoundTag compound;
+        @NotNull private final String id;
+        @NotNull private final String translatedName;
+        private final int index;
+        private final boolean isCursed;
 
-        EnchantmentCompound(CompoundTag compound) {
+        EnchantmentCompound(@NotNull Tag tag) {
+            if (tag.getType() != 10) {
+                throw new AssertionError("tag is not a CompoundTag");
+            }
+
+            this.compound = (CompoundTag) tag;
             this.id = compound.getString("id");
-            this.lvl = compound.getShort("lvl");
-            this.isCursed = Objects.requireNonNull(Registry.ENCHANTMENT.get(new Identifier(id))).isCursed();
-            if (ModConfig.enchantmentDataMap.containsKey(id)) {
-                this.translatedName = ModConfig.enchantmentDataMap.get(id).translatedName;
-                this.index = ModConfig.enchantmentDataMap.get(id).orderIndex;
+            int lvl = compound.getShort("lvl");
+
+            Enchantment enchantment = Objects.requireNonNull(Registry.ENCHANTMENT.get(new Identifier(id)));
+            this.isCursed = enchantment.isCursed();
+
+            ModConfig.EnchantmentData enchantmentData = ModConfig.enchantmentDataMap.get(id);
+            if (enchantmentData != null) {
+                this.translatedName = enchantmentData.translatedName;
+                this.index = enchantmentData.orderIndex;
             } else {
-                this.translatedName = Registry.ENCHANTMENT.get(new Identifier(id)).getName(lvl).asString();
+                this.translatedName = enchantment.getName(lvl).asString();
                 this.index = ModConfig.enchantmentDataMap.size();
             }
         }
 
-        public CompoundTag toCompoundTag() {
-            CompoundTag enchantmentCompound = new CompoundTag();
-            enchantmentCompound.putString("id", this.id);
-            enchantmentCompound.putShort("lvl", (short) this.lvl);
-            return enchantmentCompound;
+        @NotNull
+        public CompoundTag asCompoundTag() {
+            return compound;
         }
 
         public boolean isCursed() {
             return isCursed;
         }
 
+        @NotNull
         public String getTranslatedName() {
-            return this.translatedName;
+            return translatedName;
         }
 
         public int getIndex() {
-            return this.index;
+            return index;
         }
 
         @Override

@@ -24,10 +24,10 @@ public abstract class EnchantmentMixin {
     @Inject(at = @At(value = "TAIL"),
             locals = LocalCapture.CAPTURE_FAILHARD,
             method = "Lnet/minecraft/enchantment/Enchantment;getName(I)Lnet/minecraft/text/Text;")
-    private void appendGetNameTail(int level, CallbackInfoReturnable<Text> info, MutableText enchantmentName) {
-        if (ModConfig.doShowEnchantmentMaxLevel && (level != 1 || this.getMaxLevel() != 1) && BetterEnchantedBooks.tooltipName.get()) {
+    private void appendMaxEnchantmentLevel(int level, CallbackInfoReturnable<Text> info, MutableText enchantmentName) {
+        if (ModConfig.doShowEnchantmentMaxLevel && (level != 1 || this.getMaxLevel() != 1) && BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.get()) {
             enchantmentName.append("/").append(new TranslatableText("enchantment.level." + this.getMaxLevel()));
-            BetterEnchantedBooks.tooltipName.set(false);
+            BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.set(false);
         }
     }
 }

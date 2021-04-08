@@ -28,43 +28,34 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 public abstract class ItemStackMixin {
 
-    public ItemStackMixin(Item item) {
-        super();
-    }
-
     @Inject(at = @At(value = "HEAD"), method = "appendEnchantments")
     private static void appendEnchantmentsHead(List<Text> tooltip, ListTag enchantments, CallbackInfo info) {
-        if (MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
+        if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (ModConfig.configsFirstLoaded && ModConfig.sortingSetting != ModConfig.SortingSetting.DISABLED) {
-                ListTag sortedEnchantments;
-                try {
-                    sortedEnchantments = NBTUtils.sort(enchantments, ModConfig.sortingSetting);
-                    enchantments.clear();
-                    enchantments.addAll(sortedEnchantments);
-                    if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
-                        if (!BetterEnchantedBooks.cachedTooltipIcons.containsKey(BetterEnchantedBooks.enchantedItemStack.get())) {
-                            BetterEnchantedBooks.cachedTooltipIcons.putIfAbsent(BetterEnchantedBooks.enchantedItemStack.get(), new TooltipDrawerHelper.TooltipQueuedEntry(tooltip.size(), enchantments));
-                        }
-                    }
-                    TooltipDrawerHelper.currentTooltipWidth = MinecraftClient.getInstance().textRenderer.getWidth(tooltip.stream().max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line))).get());
-                } catch (Exception ignored) {
+                ListTag sortedEnchantments = NBTUtils.sort(enchantments, ModConfig.sortingSetting, ModConfig.doKeepCursesBelow);
+                enchantments.clear();
+                enchantments.addAll(sortedEnchantments);
+                if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
+                    BetterEnchantedBooks.cachedTooltipIcons.putIfAbsent(BetterEnchantedBooks.enchantedItemStack.get(), new TooltipDrawerHelper.TooltipQueuedEntry(tooltip.size(), enchantments));
                 }
+                TooltipDrawerHelper.currentTooltipWidth = MinecraftClient.getInstance().textRenderer.getWidth(tooltip.stream().max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line))).get());
             }
         }
     }
 
+    // ItemStack.appendEnchantments's lambda
     @Inject(at = @At(value = "HEAD"), method = "net/minecraft/item/ItemStack.method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
-    private static void method17869Head(List<Text> tooltip, CompoundTag tag, Enchantment enchantment, CallbackInfo info) {
-        if(ModConfig.doShowEnchantmentMaxLevel){
-            BetterEnchantedBooks.tooltipName.set(true);
+    private static void setShowEnchantmentMaxLevel(List<Text> tooltip, CompoundTag tag, Enchantment enchantment, CallbackInfo info) {
+        if (ModConfig.doShowEnchantmentMaxLevel) {
+            BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.set(true);
         }
     }
 
+    // ItemStack.appendEnchantments's lambda
     @Inject(at = @At(value = "TAIL"), method = "net/minecraft/item/ItemStack.method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
-    private static void method17869Tail(List<Text> tooltip, CompoundTag tag, Enchantment enchantment, CallbackInfo info) {
-        // This will only run on HandledScreen subclasses because there is no need for it run elsewhere and also it can cause NPE crashes.
-        if (MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
-            if (BetterEnchantedBooks.enchantedItemStack.get().isItemEqual(new ItemStack(Items.ENCHANTED_BOOK))) {
+    private static void addTooltipSpacers(List<Text> tooltip, CompoundTag tag, Enchantment enchantment, CallbackInfo info) {
+        if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
+            if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
                 switch (ModConfig.tooltipSetting) {
                     case ENABLED:
                         tooltip.addAll(TooltipDrawerHelper.getSpacerLines(enchantment, TooltipDrawerHelper.currentTooltipWidth));
