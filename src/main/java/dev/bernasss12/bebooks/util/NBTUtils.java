@@ -1,8 +1,10 @@
 package dev.bernasss12.bebooks.util;
 
+import dev.bernasss12.bebooks.BetterEnchantedBooks;
 import dev.bernasss12.bebooks.client.gui.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -10,21 +12,15 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import java.util.stream.Stream;
-
-import static dev.bernasss12.bebooks.BetterEnchantedBooks.LOGGER;
 
 @Environment(EnvType.CLIENT)
 public final class NBTUtils {
 
-    public static ListTag sort(ListTag listTag, ModConfig.SortingSetting mode, boolean cursesBelow) {
+    public static Stream<EnchantmentCompound> sorted(ListTag listTag, ModConfig.SortingSetting mode, boolean cursesBelow) {
         Comparator<EnchantmentCompound> comparator;
 
         if (cursesBelow) {
@@ -45,10 +41,13 @@ public final class NBTUtils {
                 break;
         }
 
-        ListTag result = new ListTag();
-        listTag.stream().map(EnchantmentCompound::new).sorted(comparator)
-            .forEachOrdered(tag -> result.add(tag.asCompoundTag()));
-        return result;
+        return listTag.stream().map(EnchantmentCompound::new).sorted(comparator);
+    }
+
+    public static ListTag toListTag(Stream<EnchantmentCompound> stream) {
+        ListTag listTag = new ListTag();
+        stream.forEachOrdered(tag -> listTag.add(tag.asCompoundTag()));
+        return listTag;
     }
 
     public static boolean hasCurses(ListTag listTag) {
@@ -56,40 +55,56 @@ public final class NBTUtils {
     }
 
     public static String getPriorityEnchantmentId(ListTag listTag, ModConfig.SortingSetting mode) {
-        ListTag sorted = sort(listTag, mode, true);
-        if (sorted.isEmpty()) return "";
+        Stream<EnchantmentCompound> candidates = sorted(listTag, mode, true)
+            .filter(EnchantmentCompound::isRegistered);
 
+        Optional<EnchantmentCompound> priority;
         if (ModConfig.doCurseColorOverride && hasCurses(listTag)) {
-            return listTag.getCompound(listTag.size() - 1).getString("id");
+            priority = candidates.reduce((a, b) -> b); // last element
+        } else {
+            priority = candidates.findFirst();
         }
-        return sorted.getCompound(0).getString("id");
+
+        return priority.map(EnchantmentCompound::getId).orElse("");
     }
 
-    private static class EnchantmentCompound {
+    public static class EnchantmentCompound {
         @NotNull private final CompoundTag compound;
-        @NotNull private final String id;
-        @NotNull private final String translatedName;
-        private final int index;
-        private final boolean isCursed;
+        private final Enchantment enchantment;
+        private String id = null;
+        private String translatedName = null;
+        private int index = -1;
+        private boolean isCursed = false;
 
-        EnchantmentCompound(@NotNull Tag tag) {
+        public EnchantmentCompound(@NotNull Tag tag) {
             if (tag.getType() != 10) {
                 throw new AssertionError("tag is not a CompoundTag");
             }
 
             this.compound = (CompoundTag) tag;
-            this.id = compound.getString("id");
-            int lvl = compound.getShort("lvl");
 
-            Enchantment enchantment = Objects.requireNonNull(Registry.ENCHANTMENT.get(new Identifier(id)));
-            this.isCursed = enchantment.isCursed();
+            Identifier identifier = Identifier.tryParse(compound.getString("id"));
+            this.enchantment = Registry.ENCHANTMENT.get(identifier);
 
-            ModConfig.EnchantmentData enchantmentData = ModConfig.enchantmentDataMap.get(id);
+            // Items can have non-registered enchantment tags on them
+            if (identifier == null || enchantment == null) {
+                // dummy comparison values
+                this.translatedName = "";
+                this.index = 0;
+                return;
+            }
+
+            this.isCursed = this.enchantment.isCursed();
+            this.id = identifier.toString(); // normalize e.g. "power" to "minecraft:power"
+        }
+
+        private void lazyInit() {
+            ModConfig.EnchantmentData enchantmentData = ModConfig.enchantmentDataMap.get(this.id);
             if (enchantmentData != null) {
-                this.translatedName = enchantmentData.translatedName;
+                this.translatedName = enchantmentData.getTranslatedName();
                 this.index = enchantmentData.orderIndex;
             } else {
-                this.translatedName = enchantment.getName(lvl).asString();
+                this.translatedName = I18n.translate(this.enchantment.getTranslationKey());
                 this.index = ModConfig.enchantmentDataMap.size();
             }
         }
@@ -99,16 +114,33 @@ public final class NBTUtils {
             return compound;
         }
 
+        public boolean isRegistered() {
+            return enchantment != null;
+        }
+
         public boolean isCursed() {
             return isCursed;
         }
 
         @NotNull
+        public String getId() {
+            return id;
+        }
+
+        @NotNull
         public String getTranslatedName() {
+            if (this.translatedName == null) {
+                lazyInit();
+            }
+
             return translatedName;
         }
 
         public int getIndex() {
+            if (index == -1) {
+                lazyInit();
+            }
+
             return index;
         }
 

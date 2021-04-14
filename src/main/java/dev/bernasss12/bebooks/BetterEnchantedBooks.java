@@ -14,7 +14,6 @@ import net.minecraft.item.Items;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -53,6 +52,7 @@ public class BetterEnchantedBooks implements ClientModInitializer {
             return mapped;
         }
 
+        cachedColors.put(stack, DEFAULT_BOOK_STRIP_COLOR);
         return DEFAULT_BOOK_STRIP_COLOR;
     }
 
