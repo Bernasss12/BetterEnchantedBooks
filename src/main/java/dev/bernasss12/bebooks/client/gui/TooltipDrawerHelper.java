@@ -1,5 +1,7 @@
 package dev.bernasss12.bebooks.client.gui;
 
+import dev.bernasss12.bebooks.util.NBTUtils;
+import dev.bernasss12.bebooks.util.NBTUtils.EnchantmentCompound;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -8,8 +10,11 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TooltipDrawerHelper {
 
@@ -25,7 +30,7 @@ public class TooltipDrawerHelper {
         isEnchantmentIconListMapPopulated = true;
     }
 
-    private static List<ItemStack> addEnchantmentToList(Enchantment enchantment) {
+    private static List<ItemStack> addEnchantmentToList(@NotNull Enchantment enchantment) {
         List<ItemStack> list = new ArrayList<>();
         for (ItemStack icon : ModConfig.checkedItemsList) {
             if (enchantment.isAcceptableItem(icon)) list.add(icon);
@@ -34,7 +39,7 @@ public class TooltipDrawerHelper {
         return list;
     }
 
-    public static List<ItemStack> getAndComputeIfAbsent(Enchantment enchantment) {
+    public static List<ItemStack> getAndComputeIfAbsent(@NotNull Enchantment enchantment) {
         if (enchantmentIconListMap.containsKey(enchantment)) return enchantmentIconListMap.get(enchantment);
         else return addEnchantmentToList(enchantment);
     }
@@ -56,8 +61,10 @@ public class TooltipDrawerHelper {
             this.firstLine = firstLine;
             this.enchantments = new ArrayList<>();
             for (Tag enchantmentTag : enchantments) {
-                Enchantment enchantment = Registry.ENCHANTMENT.get(new Identifier(((CompoundTag) enchantmentTag).getString("id")));
-                this.enchantments.add(enchantment);
+                Enchantment enchantment = Registry.ENCHANTMENT.get(Identifier.tryParse(((CompoundTag) enchantmentTag).getString("id")));
+                if (enchantment != null) {
+                    this.enchantments.add(enchantment);
+                }
             }
         }
 

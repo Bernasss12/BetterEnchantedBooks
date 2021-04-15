@@ -1,6 +1,7 @@
 package dev.bernasss12.bebooks.client.gui;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import com.google.gson.reflect.TypeToken;
 import dev.bernasss12.bebooks.BetterEnchantedBooks;
@@ -21,6 +22,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -83,7 +85,7 @@ public class ModConfig {
         for (Enchantment enchantment : Registry.ENCHANTMENT) {
             String id = Objects.requireNonNull(Registry.ENCHANTMENT.getId(enchantment)).toString();
             mappedEnchantmentTargets.putIfAbsent(id, enchantment.type);
-            if (enchantmentDataMap.putIfAbsent(id, new EnchantmentData(enchantment, I18n.translate(enchantment.getTranslationKey()), index, DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchantment, DEFAULT_BOOK_STRIP_COLOR))) == null)
+            if (enchantmentDataMap.putIfAbsent(id, new EnchantmentData(enchantment, index, DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchantment, DEFAULT_BOOK_STRIP_COLOR))) == null)
                 index++;
         }
         mappedEnchantmentColors = new HashMap<>();
@@ -97,7 +99,7 @@ public class ModConfig {
 
     public static void saveEnchantmentData() {
         File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), "bebooks/enchantment_data.json");
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
         // Try and write the Map to the json config file.
         try {
             FileWriter writer = new FileWriter(file);
@@ -254,13 +256,18 @@ public class ModConfig {
         bookColoring.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.book_coloring_settings.color_mode"), SortingSetting.class, colorPrioritySetting).setDefaultValue(DEFAULT_COLOR_PRIORITY_SETTING).setSaveConsumer(setting -> colorPrioritySetting = setting).build());
         bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.curse_color_override_others"), doCurseColorOverride).setSaveConsumer((doColorOverrideWhenCursedInput) -> doCurseColorOverride = doColorOverrideWhenCursedInput).build());
         ArrayList<AbstractConfigListEntry> enchantments = new ArrayList<>();
-        for (Map.Entry<String, EnchantmentData> enchantmentDataEntry : enchantmentDataMap.entrySet()) {
-            enchantments.add(entryBuilder.startColorField(new LiteralText(enchantmentDataEntry.getValue().translatedName), mappedEnchantmentColors.get(enchantmentDataEntry.getKey())).setDefaultValue(DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchantmentDataEntry.getValue().enchantment, DEFAULT_BOOK_STRIP_COLOR)).setSaveConsumer((guiEntryColor) ->
-            {
-                EnchantmentData data = enchantmentDataMap.get(enchantmentDataEntry.getKey());
-                data.color = guiEntryColor;
-                enchantmentDataMap.replace(enchantmentDataEntry.getKey(), data);
-            }).build());
+        for (Map.Entry<String, EnchantmentData> dataEntry : enchantmentDataMap.entrySet()) {
+            if (dataEntry.getValue().enchantment == null) continue;
+
+            enchantments.add(entryBuilder
+                .startColorField(new LiteralText(dataEntry.getValue().getTranslatedName()), mappedEnchantmentColors.get(dataEntry.getKey()))
+                .setDefaultValue(DEFAULT_ENCHANTMENT_COLORS.getOrDefault(dataEntry.getValue().enchantment, DEFAULT_BOOK_STRIP_COLOR))
+                .setSaveConsumer((guiEntryColor) ->
+                {
+                    EnchantmentData data = enchantmentDataMap.get(dataEntry.getKey());
+                    data.color = guiEntryColor;
+                    enchantmentDataMap.replace(dataEntry.getKey(), data);
+                }).build());
         }
         enchantments.sort(Comparator.comparing(entry -> entry.getFieldName().asString()));
         bookColoring.addEntry(entryBuilder.startSubCategory(new TranslatableText("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build());
@@ -330,20 +337,32 @@ public class ModConfig {
     }
 
     public static class EnchantmentData extends StoredEnchantmentData {
-        @NotNull public String translatedName;
         public Enchantment enchantment;
+        private String translatedName;
 
-        public EnchantmentData(Enchantment enchantment, @NotNull String translatedName, int index, int color) {
+        public EnchantmentData(Enchantment enchantment, int index, int color) {
             super(index, color);
             this.enchantment = enchantment;
-            this.translatedName = translatedName;
         }
 
         public EnchantmentData(StoredEnchantmentData data, String key) {
             super(data.orderIndex, data.color);
-            Optional<Enchantment> enchantment = Registry.ENCHANTMENT.getOrEmpty(Identifier.tryParse(key));
-            enchantment.ifPresent(value -> this.enchantment = value);
-            this.translatedName = enchantment.isPresent() ? enchantment.get().getName(1).getString() : "Error translating.";
+            this.enchantment = Registry.ENCHANTMENT.get(Identifier.tryParse(key));
+        }
+
+        @NotNull
+        public String getTranslatedName() {
+            if (enchantment == null) return ""; // dummy value
+            if (translatedName != null) return translatedName;
+
+            String translationKey = enchantment.getTranslationKey();
+
+            if (I18n.hasTranslation(translationKey)) {
+                this.translatedName = I18n.translate(translationKey);
+                return this.translatedName;
+            } else {
+                return translationKey;
+            }
         }
     }
 

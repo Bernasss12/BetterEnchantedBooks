@@ -4,18 +4,20 @@ import dev.bernasss12.bebooks.BetterEnchantedBooks;
 import dev.bernasss12.bebooks.client.gui.ModConfig;
 import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import dev.bernasss12.bebooks.util.NBTUtils;
+import dev.bernasss12.bebooks.util.NBTUtils.EnchantmentCompound;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.text.Text;
+import net.minecraft.util.registry.Registry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,6 +25,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Mixin(ItemStack.class)
 @Environment(EnvType.CLIENT)
@@ -32,13 +36,18 @@ public abstract class ItemStackMixin {
     private static void appendEnchantmentsHead(List<Text> tooltip, ListTag enchantments, CallbackInfo info) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (ModConfig.configsFirstLoaded && ModConfig.sortingSetting != ModConfig.SortingSetting.DISABLED) {
-                ListTag sortedEnchantments = NBTUtils.sort(enchantments, ModConfig.sortingSetting, ModConfig.doKeepCursesBelow);
+                ListTag sortedEnchantments = NBTUtils.toListTag(NBTUtils.sorted(enchantments, ModConfig.sortingSetting, ModConfig.doKeepCursesBelow));
+
                 enchantments.clear();
                 enchantments.addAll(sortedEnchantments);
+
                 if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
-                    BetterEnchantedBooks.cachedTooltipIcons.putIfAbsent(BetterEnchantedBooks.enchantedItemStack.get(), new TooltipDrawerHelper.TooltipQueuedEntry(tooltip.size(), enchantments));
+                    BetterEnchantedBooks.cachedTooltipIcons.putIfAbsent(BetterEnchantedBooks.enchantedItemStack.get(),
+                        new TooltipDrawerHelper.TooltipQueuedEntry(tooltip.size(), sortedEnchantments));
                 }
-                TooltipDrawerHelper.currentTooltipWidth = MinecraftClient.getInstance().textRenderer.getWidth(tooltip.stream().max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line))).get());
+
+                TooltipDrawerHelper.currentTooltipWidth = MinecraftClient.getInstance().textRenderer
+                    .getWidth(tooltip.stream().max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line))).get());
             }
         }
     }
