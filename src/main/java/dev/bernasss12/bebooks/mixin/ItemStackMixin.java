@@ -4,7 +4,6 @@ import dev.bernasss12.bebooks.BetterEnchantedBooks;
 import dev.bernasss12.bebooks.client.gui.ModConfig;
 import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import dev.bernasss12.bebooks.util.NBTUtils;
-import dev.bernasss12.bebooks.util.NBTUtils.EnchantmentCompound;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -15,9 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.util.registry.Registry;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,8 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Mixin(ItemStack.class)
 @Environment(EnvType.CLIENT)
@@ -47,13 +43,17 @@ public abstract class ItemStackMixin {
                 }
 
                 TooltipDrawerHelper.currentTooltipWidth = MinecraftClient.getInstance().textRenderer
-                    .getWidth(tooltip.stream().max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line))).get());
+                        .getWidth(tooltip.stream()
+                                .max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line)))
+                                .orElse(new LiteralText(""))
+                        );
             }
         }
     }
 
     // ItemStack.appendEnchantments's lambda
-    @Inject(at = @At(value = "HEAD"), method = "net/minecraft/item/ItemStack.method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
+    @SuppressWarnings("UnresolvedMixinReference")
+    @Inject(at = @At(value = "HEAD"), method = "method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
     private static void setShowEnchantmentMaxLevel(List<Text> tooltip, CompoundTag tag, Enchantment enchantment, CallbackInfo info) {
         if (ModConfig.doShowEnchantmentMaxLevel) {
             BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.set(true);
@@ -61,7 +61,8 @@ public abstract class ItemStackMixin {
     }
 
     // ItemStack.appendEnchantments's lambda
-    @Inject(at = @At(value = "TAIL"), method = "net/minecraft/item/ItemStack.method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
+    @SuppressWarnings("UnresolvedMixinReference")
+    @Inject(at = @At(value = "TAIL"), method = "method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
     private static void addTooltipSpacers(List<Text> tooltip, CompoundTag tag, Enchantment enchantment, CallbackInfo info) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
