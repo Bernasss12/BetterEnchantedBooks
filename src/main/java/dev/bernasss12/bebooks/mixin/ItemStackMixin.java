@@ -19,38 +19,36 @@ import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Comparator;
 import java.util.List;
 
-@Mixin(ItemStack.class)
+@Mixin(value = ItemStack.class, priority = 10)
 @Environment(EnvType.CLIENT)
 public abstract class ItemStackMixin {
 
-    @Inject(at = @At(value = "HEAD"), method = "appendEnchantments")
-    private static void appendEnchantmentsHead(List<Text> tooltip, ListTag enchantments, CallbackInfo info) {
+    @ModifyVariable(method = "appendEnchantments", argsOnly = true, at = @At("HEAD"))
+    private static ListTag appendEnchantmentsHead(ListTag tag, List<Text> tooltip, ListTag enchantments) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (ModConfig.configsFirstLoaded && ModConfig.sortingSetting != ModConfig.SortingSetting.DISABLED) {
                 ListTag sortedEnchantments = NBTUtils.toListTag(NBTUtils.sorted(enchantments, ModConfig.sortingSetting, ModConfig.doKeepCursesBelow));
 
-                enchantments.clear();
-                enchantments.addAll(sortedEnchantments);
-
                 if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
                     BetterEnchantedBooks.cachedTooltipIcons.putIfAbsent(BetterEnchantedBooks.enchantedItemStack.get(),
-                        new TooltipDrawerHelper.TooltipQueuedEntry(tooltip.size(), sortedEnchantments));
+                            new TooltipDrawerHelper.TooltipQueuedEntry(tooltip.size(), sortedEnchantments));
                 }
 
                 TooltipDrawerHelper.currentTooltipWidth = MinecraftClient.getInstance().textRenderer
-                        .getWidth(tooltip.stream()
-                                .max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line)))
-                                .orElse(new LiteralText(""))
-                        );
+                                                                  .getWidth(tooltip.stream()
+                                                                                   .max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line)))
+                                                                                   .orElse(new LiteralText("")));
+                return sortedEnchantments;
             }
         }
+        return tag;
     }
-
     // ItemStack.appendEnchantments's lambda
     @SuppressWarnings("UnresolvedMixinReference")
     @Inject(at = @At(value = "HEAD"), method = "method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
