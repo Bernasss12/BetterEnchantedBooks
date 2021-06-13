@@ -72,6 +72,9 @@ public abstract class ScreenMixin extends DrawableHelper {
 
     @Unique
     protected void drawTooltipIcons(List<? extends OrderedText> text, int x, int y) {
+        TooltipDrawerHelper.TooltipQueuedEntry entry = BetterEnchantedBooks.cachedTooltipIcons.get(BetterEnchantedBooks.enchantedItemStack.get());
+        if (entry == null) return;
+
         int maxLength = TooltipDrawerHelper.currentTooltipWidth;
         int translatedX = x + 12;
         int translatedY = y - 12;
@@ -90,7 +93,6 @@ public abstract class ScreenMixin extends DrawableHelper {
         RenderSystem.pushMatrix();
         RenderSystem.enableRescaleNormal();
         RenderSystem.translatef(0f, 0f, 401f);
-        TooltipDrawerHelper.TooltipQueuedEntry entry = BetterEnchantedBooks.cachedTooltipIcons.get(BetterEnchantedBooks.enchantedItemStack.get());
         translatedY += entry.getFirstLine() * 10 + 12;
         for (Enchantment enchantment : entry.getList()) {
             int xOffset = 4;
