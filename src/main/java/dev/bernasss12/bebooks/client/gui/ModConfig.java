@@ -77,8 +77,7 @@ public class ModConfig {
             }.getType());
             enchantmentDataMap = fromStoredData(storedEnchantmentDataMap);
         } catch (Exception e) {
-            LOGGER.error("Couldn't load enchantment data", e);
-            // In case map parsing fails create a new empty map and populate it with all registered enchantments with the default color.
+            if (!(e instanceof FileNotFoundException)) LOGGER.error("Couldn't load enchantment data", e);
             enchantmentDataMap = new HashMap<>();
         }
         int index = enchantmentDataMap.size();

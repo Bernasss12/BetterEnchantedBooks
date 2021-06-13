@@ -12,8 +12,8 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,10 +30,10 @@ import java.util.List;
 public abstract class ItemStackMixin {
 
     @ModifyVariable(method = "appendEnchantments", argsOnly = true, at = @At("HEAD"))
-    private static ListTag appendEnchantmentsHead(ListTag tag, List<Text> tooltip, ListTag enchantments) {
+    private static NbtList appendEnchantmentsHead(NbtList tag, List<Text> tooltip, NbtList enchantments) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (ModConfig.configsFirstLoaded && ModConfig.sortingSetting != ModConfig.SortingSetting.DISABLED) {
-                ListTag sortedEnchantments = NBTUtils.toListTag(NBTUtils.sorted(enchantments, ModConfig.sortingSetting, ModConfig.doKeepCursesBelow));
+                NbtList sortedEnchantments = NBTUtils.toListTag(NBTUtils.sorted(enchantments, ModConfig.sortingSetting, ModConfig.doKeepCursesBelow));
 
                 if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
                     BetterEnchantedBooks.cachedTooltipIcons.putIfAbsent(BetterEnchantedBooks.enchantedItemStack.get(),
@@ -51,8 +51,8 @@ public abstract class ItemStackMixin {
     }
     // ItemStack.appendEnchantments's lambda
     @SuppressWarnings("UnresolvedMixinReference")
-    @Inject(at = @At(value = "HEAD"), method = "method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
-    private static void setShowEnchantmentMaxLevel(List<Text> tooltip, CompoundTag tag, Enchantment enchantment, CallbackInfo info) {
+    @Inject(at = @At(value = "HEAD"), method = "method_17869(Ljava/util/List;Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/enchantment/Enchantment;)V")
+    private static void setShowEnchantmentMaxLevel(List<Text> tooltip, NbtCompound tag, Enchantment enchantment, CallbackInfo info) {
         if (ModConfig.doShowEnchantmentMaxLevel) {
             BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.set(true);
         }
@@ -60,8 +60,8 @@ public abstract class ItemStackMixin {
 
     // ItemStack.appendEnchantments's lambda
     @SuppressWarnings("UnresolvedMixinReference")
-    @Inject(at = @At(value = "TAIL"), method = "method_17869(Ljava/util/List;Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/enchantment/Enchantment;)V")
-    private static void addTooltipSpacers(List<Text> tooltip, CompoundTag tag, Enchantment enchantment, CallbackInfo info) {
+    @Inject(at = @At(value = "TAIL"), method = "method_17869(Ljava/util/List;Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/enchantment/Enchantment;)V")
+    private static void addTooltipSpacers(List<Text> tooltip, NbtCompound tag, Enchantment enchantment, CallbackInfo info) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
                 switch (ModConfig.tooltipSetting) {

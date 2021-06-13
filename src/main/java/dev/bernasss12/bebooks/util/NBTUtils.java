@@ -6,9 +6,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 @Environment(EnvType.CLIENT)
 public final class NBTUtils {
 
-    public static Stream<EnchantmentCompound> sorted(ListTag listTag, ModConfig.SortingSetting mode, boolean cursesBelow) {
+    public static Stream<EnchantmentCompound> sorted(NbtList listTag, ModConfig.SortingSetting mode, boolean cursesBelow) {
         Comparator<EnchantmentCompound> comparator;
 
         if (cursesBelow) {
@@ -44,17 +44,17 @@ public final class NBTUtils {
         return listTag.stream().map(EnchantmentCompound::new).sorted(comparator);
     }
 
-    public static ListTag toListTag(Stream<EnchantmentCompound> stream) {
-        ListTag listTag = new ListTag();
+    public static NbtList toListTag(Stream<EnchantmentCompound> stream) {
+        NbtList listTag = new NbtList();
         stream.forEachOrdered(tag -> listTag.add(tag.asCompoundTag()));
         return listTag;
     }
 
-    public static boolean hasCurses(ListTag listTag) {
+    public static boolean hasCurses(NbtList listTag) {
         return listTag.stream().map(EnchantmentCompound::new).anyMatch(EnchantmentCompound::isCursed);
     }
 
-    public static String getPriorityEnchantmentId(ListTag listTag, ModConfig.SortingSetting mode) {
+    public static String getPriorityEnchantmentId(NbtList listTag, ModConfig.SortingSetting mode) {
         Stream<EnchantmentCompound> candidates = sorted(listTag, mode, true)
             .filter(EnchantmentCompound::isRegistered);
 
@@ -69,19 +69,19 @@ public final class NBTUtils {
     }
 
     public static class EnchantmentCompound {
-        @NotNull private final CompoundTag compound;
+        @NotNull private final NbtCompound compound;
         private final Enchantment enchantment;
         private String id = null;
         private String translatedName = null;
         private int index = -1;
         private boolean isCursed = false;
 
-        public EnchantmentCompound(@NotNull Tag tag) {
+        public EnchantmentCompound(@NotNull NbtElement tag) {
             if (tag.getType() != 10) {
                 throw new AssertionError("tag is not a CompoundTag");
             }
 
-            this.compound = (CompoundTag) tag;
+            this.compound = (NbtCompound) tag;
 
             Identifier identifier = Identifier.tryParse(compound.getString("id"));
             this.enchantment = Registry.ENCHANTMENT.get(identifier);
@@ -110,7 +110,7 @@ public final class NBTUtils {
         }
 
         @NotNull
-        public CompoundTag asCompoundTag() {
+        public NbtCompound asCompoundTag() {
             return compound;
         }
 
