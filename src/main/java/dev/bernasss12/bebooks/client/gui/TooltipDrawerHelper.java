@@ -4,9 +4,9 @@ import dev.bernasss12.bebooks.util.NBTUtils;
 import dev.bernasss12.bebooks.util.NBTUtils.EnchantmentCompound;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -57,11 +57,11 @@ public class TooltipDrawerHelper {
         private final int firstLine;
         private final List<Enchantment> enchantments;
 
-        public TooltipQueuedEntry(int firstLine, ListTag enchantments) {
+        public TooltipQueuedEntry(int firstLine, NbtList enchantments) {
             this.firstLine = firstLine;
             this.enchantments = new ArrayList<>();
-            for (Tag enchantmentTag : enchantments) {
-                Enchantment enchantment = Registry.ENCHANTMENT.get(Identifier.tryParse(((CompoundTag) enchantmentTag).getString("id")));
+            for (NbtElement enchantmentTag : enchantments) {
+                Enchantment enchantment = Registry.ENCHANTMENT.get(Identifier.tryParse(((NbtCompound) enchantmentTag).getString("id")));
                 if (enchantment != null) {
                     this.enchantments.add(enchantment);
                 }

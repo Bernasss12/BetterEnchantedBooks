@@ -46,7 +46,7 @@ public class BetterEnchantedBooks implements ClientModInitializer {
         Integer cached = cachedColors.get(stack);
         if (cached != null) return cached;
 
-        Integer mapped = ModConfig.mappedEnchantmentColors.get(NBTUtils.getPriorityEnchantmentId(EnchantedBookItem.getEnchantmentTag(stack), ModConfig.colorPrioritySetting));
+        Integer mapped = ModConfig.mappedEnchantmentColors.get(NBTUtils.getPriorityEnchantmentId(EnchantedBookItem.getEnchantmentNbt(stack), ModConfig.colorPrioritySetting));
         if (mapped != null) {
             cachedColors.put(stack, mapped);
             return mapped;

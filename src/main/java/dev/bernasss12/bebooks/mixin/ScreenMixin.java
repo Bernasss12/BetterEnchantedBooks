@@ -11,6 +11,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
@@ -53,16 +54,16 @@ public abstract class ScreenMixin extends DrawableHelper {
     @Inject(at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/util/math/MatrixStack;pop()V",
             ordinal = 0),
-            method = "Lnet/minecraft/client/gui/screen/Screen;renderOrderedTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V"
+            method = "Lnet/minecraft/client/gui/screen/Screen;renderTooltipFromComponents(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;II)V"
     )
-    private void renderEnchantmentTooltipIcons(MatrixStack matrices, List<? extends OrderedText> list, int x, int y, CallbackInfo ci) {
+    private void renderEnchantmentTooltipIcons(MatrixStack matrices, List<TooltipComponent> list, int x, int y, CallbackInfo ci) {
         if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
             switch (ModConfig.tooltipSetting) {
                 case ENABLED:
-                    drawTooltipIcons(list, x, y);
+                    drawTooltipIcons(matrices, list, x, y);
                     break;
                 case ON_SHIFT:
-                    if (Screen.hasShiftDown()) drawTooltipIcons(list, x, y);
+                    if (Screen.hasShiftDown()) drawTooltipIcons(matrices, list, x, y);
                     break;
                 case DISABLED:
                     break;
@@ -71,7 +72,7 @@ public abstract class ScreenMixin extends DrawableHelper {
     }
 
     @Unique
-    protected void drawTooltipIcons(List<? extends OrderedText> text, int x, int y) {
+    protected void drawTooltipIcons(MatrixStack matrices, List<TooltipComponent> text, int x, int y) {
         TooltipDrawerHelper.TooltipQueuedEntry entry = BetterEnchantedBooks.cachedTooltipIcons.get(BetterEnchantedBooks.enchantedItemStack.get());
         if (entry == null) return;
 
@@ -90,14 +91,13 @@ public abstract class ScreenMixin extends DrawableHelper {
         if (translatedY + tooltipHeight + 6 > this.height) {
             translatedY = this.height - tooltipHeight - 6;
         }
-        RenderSystem.pushMatrix();
-        RenderSystem.enableRescaleNormal();
-        RenderSystem.translatef(0f, 0f, 401f);
+        matrices.push();
+        matrices.translate(0, 0, 401);
         translatedY += entry.getFirstLine() * 10 + 12;
         for (Enchantment enchantment : entry.getList()) {
             int xOffset = 4;
             for (ItemStack icon : TooltipDrawerHelper.getAndComputeIfAbsent(enchantment)) {
-                if(xOffset > maxLength){
+                if (xOffset > maxLength){
                     translatedY += MinecraftClient.getInstance().textRenderer.fontHeight;
                     xOffset = 4;
                 }
@@ -106,16 +106,22 @@ public abstract class ScreenMixin extends DrawableHelper {
             }
             translatedY += 20;
         }
-        RenderSystem.translatef(0f, 0f, -401f);
-        RenderSystem.popMatrix();
+        matrices.translate(0, 0, -401);
+        matrices.pop();
     }
 
     @Unique
     private static void drawScaledItem(ItemRenderer itemRenderer, ItemStack stack, int x, int y, float scale) {
         int scaledX = (int) (x / scale);
         int scaledY = (int) (y / scale);
-        RenderSystem.scalef(scale, scale, 1.0f);
+
+        MatrixStack matrices = RenderSystem.getModelViewStack();
+        matrices.scale(scale, scale, 1.0f);
+        RenderSystem.applyModelViewMatrix();
+
         itemRenderer.renderGuiItemIcon(stack, scaledX - 8, scaledY);
-        RenderSystem.scalef(1 / scale, 1 / scale, 1.0f);
+
+        matrices.scale(1 / scale, 1 / scale, 1.0f);
+        RenderSystem.applyModelViewMatrix();
     }
 }
