@@ -7,17 +7,14 @@ import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.OrderedText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -76,6 +73,7 @@ public abstract class ScreenMixin extends DrawableHelper {
         TooltipDrawerHelper.TooltipQueuedEntry entry = BetterEnchantedBooks.cachedTooltipIcons.get(BetterEnchantedBooks.enchantedItemStack.get());
         if (entry == null) return;
 
+        final MinecraftClient client = MinecraftClient.getInstance();
         int maxLength = TooltipDrawerHelper.currentTooltipWidth;
         int translatedX = x + 12;
         int translatedY = y - 12;
@@ -97,8 +95,8 @@ public abstract class ScreenMixin extends DrawableHelper {
         for (Enchantment enchantment : entry.getList()) {
             int xOffset = 4;
             for (ItemStack icon : TooltipDrawerHelper.getAndComputeIfAbsent(enchantment)) {
-                if (xOffset > maxLength){
-                    translatedY += MinecraftClient.getInstance().textRenderer.fontHeight;
+                if (xOffset > maxLength) {
+                    translatedY += client.textRenderer.fontHeight;
                     xOffset = 4;
                 }
                 drawScaledItem(itemRenderer, icon, translatedX + xOffset, translatedY, 0.5f);

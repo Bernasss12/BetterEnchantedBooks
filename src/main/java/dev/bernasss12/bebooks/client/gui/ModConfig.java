@@ -22,7 +22,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -254,6 +253,7 @@ public class ModConfig {
         bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.active"), doColorBooks).setSaveConsumer((doColorBooksInput) -> doColorBooks = doColorBooksInput).build());
         bookColoring.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.book_coloring_settings.color_mode"), SortingSetting.class, colorPrioritySetting).setDefaultValue(DEFAULT_COLOR_PRIORITY_SETTING).setSaveConsumer(setting -> colorPrioritySetting = setting).build());
         bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.curse_color_override_others"), doCurseColorOverride).setSaveConsumer((doColorOverrideWhenCursedInput) -> doCurseColorOverride = doColorOverrideWhenCursedInput).build());
+        @SuppressWarnings("rawtypes")
         ArrayList<AbstractConfigListEntry> enchantments = new ArrayList<>();
         for (Map.Entry<String, EnchantmentData> dataEntry : enchantmentDataMap.entrySet()) {
             if (dataEntry.getValue().enchantment == null) continue;
