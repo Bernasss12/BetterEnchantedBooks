@@ -17,7 +17,8 @@ public abstract class TitleScreenMixin {
     private void init(CallbackInfo info) {
         if (!ModConfig.configsFirstLoaded) {
             TooltipDrawerHelper.populateEnchantmentIconList();
-            ModConfig.loadConfig();
+            ModConfig.loadAndPopulateConfig();
+            ModConfig.saveConfig();
         }
     }
 }

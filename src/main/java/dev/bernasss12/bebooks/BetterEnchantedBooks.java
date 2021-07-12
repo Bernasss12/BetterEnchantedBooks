@@ -1,6 +1,7 @@
 package dev.bernasss12.bebooks;
 
 import dev.bernasss12.bebooks.client.gui.ModConfig;
+import dev.bernasss12.bebooks.client.gui.ModConfig.EnchantmentData;
 import dev.bernasss12.bebooks.client.gui.ModConstants;
 import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import dev.bernasss12.bebooks.util.NBTUtils;
@@ -27,16 +28,14 @@ public class BetterEnchantedBooks implements ClientModInitializer {
     private static Map<ItemStack, Integer> cachedColors;
     public static Map<ItemStack, TooltipDrawerHelper.TooltipQueuedEntry> cachedTooltipIcons;
 
-    public static ThreadLocal<ItemStack> enchantedItemStack;
-    public static ThreadLocal<Boolean> shouldShowEnchantmentMaxLevel;
+    public static final ThreadLocal<ItemStack> enchantedItemStack = ThreadLocal.withInitial(() -> ItemStack.EMPTY);
+    public static final ThreadLocal<Boolean> shouldShowEnchantmentMaxLevel = ThreadLocal.withInitial(() -> false);
 
     @Override
     public void onInitializeClient() {
-        ModConstants.populateDefaultColorsMap();
         cachedColors = new WeakHashMap<>();
         cachedTooltipIcons = new WeakHashMap<>();
-        enchantedItemStack = ThreadLocal.withInitial(() -> ItemStack.EMPTY);
-        shouldShowEnchantmentMaxLevel = ThreadLocal.withInitial(() -> false);
+
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? getColorFromEnchantmentList(stack) : -1, Items.ENCHANTED_BOOK);
     }
 
@@ -46,10 +45,10 @@ public class BetterEnchantedBooks implements ClientModInitializer {
         Integer cached = cachedColors.get(stack);
         if (cached != null) return cached;
 
-        Integer mapped = ModConfig.mappedEnchantmentColors.get(NBTUtils.getPriorityEnchantmentId(EnchantedBookItem.getEnchantmentNbt(stack), ModConfig.colorPrioritySetting));
-        if (mapped != null) {
-            cachedColors.put(stack, mapped);
-            return mapped;
+        EnchantmentData data = ModConfig.enchantmentDataMap.get(NBTUtils.getPriorityEnchantmentId(EnchantedBookItem.getEnchantmentNbt(stack), ModConfig.colorPrioritySetting));
+        if (data != null) {
+            cachedColors.put(stack, data.color);
+            return data.color;
         }
 
         cachedColors.put(stack, DEFAULT_BOOK_STRIP_COLOR);
