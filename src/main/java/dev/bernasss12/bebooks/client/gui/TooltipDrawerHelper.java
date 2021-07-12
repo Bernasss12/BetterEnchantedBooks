@@ -1,7 +1,5 @@
 package dev.bernasss12.bebooks.client.gui;
 
-import dev.bernasss12.bebooks.util.NBTUtils;
-import dev.bernasss12.bebooks.util.NBTUtils.EnchantmentCompound;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -13,8 +11,6 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class TooltipDrawerHelper {
 
