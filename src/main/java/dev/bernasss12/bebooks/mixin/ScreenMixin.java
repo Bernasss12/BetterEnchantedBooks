@@ -7,17 +7,14 @@ import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.text.OrderedText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -106,7 +103,6 @@ public abstract class ScreenMixin extends DrawableHelper {
             }
             translatedY += 20;
         }
-        matrices.translate(0, 0, -401);
         matrices.pop();
     }
 
@@ -116,12 +112,13 @@ public abstract class ScreenMixin extends DrawableHelper {
         int scaledY = (int) (y / scale);
 
         MatrixStack matrices = RenderSystem.getModelViewStack();
+        matrices.push();
         matrices.scale(scale, scale, 1.0f);
         RenderSystem.applyModelViewMatrix();
 
         itemRenderer.renderGuiItemIcon(stack, scaledX - 8, scaledY);
 
-        matrices.scale(1 / scale, 1 / scale, 1.0f);
+        matrices.pop();
         RenderSystem.applyModelViewMatrix();
     }
 }
