@@ -36,17 +36,18 @@ public abstract class ItemStackMixin {
 
             if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
                 BetterEnchantedBooks.cachedTooltipIcons.putIfAbsent(BetterEnchantedBooks.enchantedItemStack.get(),
-                        new TooltipDrawerHelper.TooltipQueuedEntry(tooltip.size(), sortedEnchantments));
+                    new TooltipDrawerHelper.TooltipQueuedEntry(tooltip.size(), sortedEnchantments));
             }
 
             TooltipDrawerHelper.currentTooltipWidth = MinecraftClient.getInstance().textRenderer
-                                                              .getWidth(tooltip.stream()
-                                                                               .max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line)))
-                                                                               .orElse(new LiteralText("")));
+                .getWidth(tooltip.stream()
+                    .max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line)))
+                    .orElse(new LiteralText("")));
             return sortedEnchantments;
         }
         return tag;
     }
+
     // ItemStack.appendEnchantments's lambda
     @SuppressWarnings("UnresolvedMixinReference")
     @Inject(at = @At(value = "HEAD"), method = "method_17869(Ljava/util/List;Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/enchantment/Enchantment;)V")
