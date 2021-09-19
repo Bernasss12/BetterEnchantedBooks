@@ -31,6 +31,7 @@ import static dev.bernasss12.bebooks.client.gui.ModConstants.*;
 
 @Environment(EnvType.CLIENT)
 public class ModConfig {
+    private static final Path CONFIG_DIR = FabricLoader.getInstance().getConfigDir().resolve("bebooks");
 
     public static boolean configsFirstLoaded = false;
     public static Map<String, EnchantmentData> enchantmentDataMap = new HashMap<>();
@@ -68,14 +69,16 @@ public class ModConfig {
     }
 
     private static void loadEnchantmentData() {
-        Path path = FabricLoader.getInstance().getConfigDir().resolve("bebooks/enchantment_data.json");
+        Path path = CONFIG_DIR.resolve("enchantment_data.json");
         Gson gson = new Gson();
+
+        if (!Files.exists(path))
+            return;
 
         // Try to parse the enchantment data from the json file
         try {
             String json = Files.readString(path);
             enchantmentDataMap = gson.fromJson(json, new TypeToken<Map<String, EnchantmentData>>() {}.getType());
-        } catch (FileNotFoundException ignored) {
         } catch (Exception e) {
             LOGGER.error("Couldn't load enchantment data!", e);
         }
@@ -98,7 +101,7 @@ public class ModConfig {
     }
 
     public static void saveEnchantmentData() {
-        Path path = FabricLoader.getInstance().getConfigDir().resolve("bebooks/enchantment_data.json");
+        Path path = CONFIG_DIR.resolve("enchantment_data.json");
         Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
         // Try to save the enchantment data as a json file
@@ -111,59 +114,60 @@ public class ModConfig {
     }
 
     public static void loadAndPopulateConfig() {
-        Path path = FabricLoader.getInstance().getConfigDir().resolve("bebooks/config.properties");
+        Path path = CONFIG_DIR.resolve("config.properties");
 
         loadConfigDefaults();
 
         // Try to read and parse config file
-        try (BufferedReader reader = Files.newBufferedReader(path)) {
-            Properties properties = new Properties();
-            properties.load(reader);
+        if (Files.exists(path)) {
+            try (BufferedReader reader = Files.newBufferedReader(path)) {
+                Properties properties = new Properties();
+                properties.load(reader);
 
-            // Get setting version
-            int version = 0;
-            if (properties.containsKey("version")) {
-                version = Integer.parseInt(properties.getProperty("version"));
-            }
+                // Get setting version
+                int version = 0;
+                if (properties.containsKey("version")) {
+                    version = Integer.parseInt(properties.getProperty("version"));
+                }
 
-            // Sorting Settings
-            if (version == 0) {
-                if (Boolean.parseBoolean(properties.getProperty("sort"))) {
-                    if (Boolean.parseBoolean(properties.getProperty("sort_alphabetically"))) {
-                        sortingSetting = SortingSetting.ALPHABETICALLY;
+                // Sorting Settings
+                if (version == 0) {
+                    if (Boolean.parseBoolean(properties.getProperty("sort"))) {
+                        if (Boolean.parseBoolean(properties.getProperty("sort_alphabetically"))) {
+                            sortingSetting = SortingSetting.ALPHABETICALLY;
+                        } else {
+                            sortingSetting = SortingSetting.CUSTOM;
+                        }
                     } else {
-                        sortingSetting = SortingSetting.CUSTOM;
+                        sortingSetting = SortingSetting.DISABLED;
                     }
                 } else {
-                    sortingSetting = SortingSetting.DISABLED;
+                    sortingSetting = SortingSetting.fromString(properties.getProperty("sorting_mode"));
                 }
-            } else {
-                sortingSetting = SortingSetting.fromString(properties.getProperty("sorting_mode"));
-            }
-            doKeepCursesBelow = Boolean.parseBoolean(properties.getProperty("keep_curses_below"));
+                doKeepCursesBelow = Boolean.parseBoolean(properties.getProperty("keep_curses_below"));
 
-            // Coloring Settings
-            doColorBooks = Boolean.parseBoolean(properties.getProperty("color_books"));
-            doCurseColorOverride = Boolean.parseBoolean(properties.getProperty("override_curse_color"));
-            if (version == 0) {
-                if (Boolean.parseBoolean(properties.getProperty("color_books_based_on_alphabetical_order"))) {
-                    colorPrioritySetting = SortingSetting.ALPHABETICALLY;
+                // Coloring Settings
+                doColorBooks = Boolean.parseBoolean(properties.getProperty("color_books"));
+                doCurseColorOverride = Boolean.parseBoolean(properties.getProperty("override_curse_color"));
+                if (version == 0) {
+                    if (Boolean.parseBoolean(properties.getProperty("color_books_based_on_alphabetical_order"))) {
+                        colorPrioritySetting = SortingSetting.ALPHABETICALLY;
+                    } else {
+                        colorPrioritySetting = SortingSetting.CUSTOM;
+                    }
                 } else {
-                    colorPrioritySetting = SortingSetting.CUSTOM;
+                    colorPrioritySetting = SortingSetting.fromString(properties.getProperty("color_mode"));
                 }
-            } else {
-                colorPrioritySetting = SortingSetting.fromString(properties.getProperty("color_mode"));
+
+                // Tooltip Settings
+                doShowEnchantmentMaxLevel = Boolean.parseBoolean(properties.getProperty("show_max_enchantment_level"));
+                tooltipSetting = TooltipSetting.fromString(properties.getProperty("tooltip_mode"));
+
+                // Enchantment Glint
+                glintSetting = Boolean.parseBoolean(properties.getProperty("enchanted_book_glint"));
+            } catch (Exception e) {
+                LOGGER.error("Failed to read config file!", e);
             }
-
-            // Tooltip Settings
-            doShowEnchantmentMaxLevel = Boolean.parseBoolean(properties.getProperty("show_max_enchantment_level"));
-            tooltipSetting = TooltipSetting.fromString(properties.getProperty("tooltip_mode"));
-
-            // Enchantment Glint
-            glintSetting = Boolean.parseBoolean(properties.getProperty("enchanted_book_glint"));
-        } catch (FileNotFoundException ignored) {
-        } catch (Exception e) {
-            LOGGER.error("Failed to read config file!", e);
         }
 
         loadEnchantmentData();
@@ -173,7 +177,13 @@ public class ModConfig {
     }
 
     public static void saveConfig() {
-        Path path = FabricLoader.getInstance().getConfigDir().resolve("bebooks/config.properties");
+        Path path = CONFIG_DIR.resolve("config.properties");
+
+        try {
+            Files.createDirectories(CONFIG_DIR);
+        } catch (IOException e) {
+            LOGGER.error("Couldn't create config directory!", e);
+        }
 
         // Try to write config file
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
