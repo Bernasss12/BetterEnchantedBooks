@@ -31,6 +31,7 @@ import static dev.bernasss12.bebooks.client.gui.ModConstants.*;
 
 @Environment(EnvType.CLIENT)
 public class ModConfig {
+    private static final Path CONFIG_DIR = FabricLoader.getInstance().getConfigDir().resolve("bebooks");
 
     public static boolean configsFirstLoaded = false;
     public static Map<String, EnchantmentData> enchantmentDataMap = new HashMap<>();
@@ -68,7 +69,7 @@ public class ModConfig {
     }
 
     private static void loadEnchantmentData() {
-        Path path = FabricLoader.getInstance().getConfigDir().resolve("bebooks/enchantment_data.json");
+        Path path = CONFIG_DIR.resolve("enchantment_data.json");
         Gson gson = new Gson();
 
         // Try to parse the enchantment data from the json file
@@ -98,7 +99,7 @@ public class ModConfig {
     }
 
     public static void saveEnchantmentData() {
-        Path path = FabricLoader.getInstance().getConfigDir().resolve("bebooks/enchantment_data.json");
+        Path path = CONFIG_DIR.resolve("enchantment_data.json");
         Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
         // Try to save the enchantment data as a json file
@@ -111,7 +112,7 @@ public class ModConfig {
     }
 
     public static void loadAndPopulateConfig() {
-        Path path = FabricLoader.getInstance().getConfigDir().resolve("bebooks/config.properties");
+        Path path = CONFIG_DIR.resolve("config.properties");
 
         loadConfigDefaults();
 
@@ -173,7 +174,13 @@ public class ModConfig {
     }
 
     public static void saveConfig() {
-        Path path = FabricLoader.getInstance().getConfigDir().resolve("bebooks/config.properties");
+        Path path = CONFIG_DIR.resolve("config.properties");
+
+        try {
+            Files.createDirectories(CONFIG_DIR);
+        } catch (IOException e) {
+            LOGGER.error("Couldn't create config directory!", e);
+        }
 
         // Try to write config file
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
