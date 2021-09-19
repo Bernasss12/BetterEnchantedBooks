@@ -1,7 +1,7 @@
 # Better Enchanted Books !
 
-[![downloads](http://cf.way2muchnoise.eu/better-enchanted-books.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/better-enchanted-books)
-[![versions](http://cf.way2muchnoise.eu/versions/better-enchanted-books.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/better-enchanted-books)
+[![downloads](http://cf.way2muchnoise.eu/369122.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/better-enchanted-books)
+[![versions](http://cf.way2muchnoise.eu/versions/369122.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/better-enchanted-books)
 [![Requires ClothConfig Api](http://cf.way2muchnoise.eu/title/fabric-api_Requires_%20.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
 [![Requires ClothConfig Api](http://cf.way2muchnoise.eu/title/cloth-config_Requires_%20.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/cloth-config/)
 
