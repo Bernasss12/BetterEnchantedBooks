@@ -2,8 +2,8 @@ package dev.bernasss12.bebooks.mixin;
 
 import dev.bernasss12.bebooks.BetterEnchantedBooks;
 import dev.bernasss12.bebooks.client.gui.ModConfig;
-import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
 import dev.bernasss12.bebooks.util.NBTUtils;
+import dev.bernasss12.bebooks.util.text.IconTooltipDataText;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -14,7 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,7 +21,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Mixin(value = ItemStack.class, priority = 10)
@@ -32,18 +30,7 @@ public abstract class ItemStackMixin {
     @ModifyVariable(method = "appendEnchantments", argsOnly = true, at = @At("HEAD"))
     private static NbtList appendEnchantmentsHead(NbtList tag, List<Text> tooltip, NbtList enchantments) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
-            NbtList sortedEnchantments = NBTUtils.toListTag(NBTUtils.sorted(enchantments, ModConfig.sortingSetting, ModConfig.doKeepCursesBelow));
-
-            if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
-                BetterEnchantedBooks.cachedTooltipIcons.putIfAbsent(BetterEnchantedBooks.enchantedItemStack.get(),
-                    new TooltipDrawerHelper.TooltipQueuedEntry(tooltip.size(), sortedEnchantments));
-            }
-
-            TooltipDrawerHelper.currentTooltipWidth = MinecraftClient.getInstance().textRenderer
-                .getWidth(tooltip.stream()
-                    .max(Comparator.comparing(line -> MinecraftClient.getInstance().textRenderer.getWidth(line)))
-                    .orElse(new LiteralText("")));
-            return sortedEnchantments;
+            return NBTUtils.toListTag(NBTUtils.sorted(enchantments, ModConfig.sortingSetting, ModConfig.doKeepCursesBelow));
         }
         return tag;
     }
@@ -65,10 +52,11 @@ public abstract class ItemStackMixin {
             if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
                 switch (ModConfig.tooltipSetting) {
                     case ENABLED:
-                        tooltip.addAll(TooltipDrawerHelper.getSpacerLines(enchantment, TooltipDrawerHelper.currentTooltipWidth));
+                        tooltip.add(new IconTooltipDataText(BetterEnchantedBooks.getApplicableItems(enchantment)));
                         break;
                     case ON_SHIFT:
-                        if (Screen.hasShiftDown()) tooltip.addAll(TooltipDrawerHelper.getSpacerLines(enchantment, TooltipDrawerHelper.currentTooltipWidth));
+                        if (Screen.hasShiftDown())
+                            tooltip.add(new IconTooltipDataText(BetterEnchantedBooks.getApplicableItems(enchantment)));
                         break;
                     case DISABLED:
                         break;
