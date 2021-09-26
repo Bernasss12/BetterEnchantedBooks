@@ -21,7 +21,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -210,6 +212,7 @@ public class ModConfig {
         saveEnchantmentData();
     }
 
+    @SuppressWarnings("rawtypes")
     public static ConfigBuilder getConfigScreen() {
         // Base config builder
         ConfigBuilder builder = ConfigBuilder.create();
@@ -275,7 +278,7 @@ public class ModConfig {
         }
 
         @Override
-        public String getKey() {
+        public @NotNull String getKey() {
             return "enum.bebooks.tooltip_settings." + toString().toLowerCase();
         }
     }
@@ -295,7 +298,7 @@ public class ModConfig {
         }
 
         @Override
-        public String getKey() {
+        public @NotNull String getKey() {
             return "enum.bebooks.sorting_settings." + toString().toLowerCase();
         }
     }

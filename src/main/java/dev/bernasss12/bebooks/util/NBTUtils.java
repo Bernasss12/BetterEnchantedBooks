@@ -1,6 +1,5 @@
 package dev.bernasss12.bebooks.util;
 
-import dev.bernasss12.bebooks.BetterEnchantedBooks;
 import dev.bernasss12.bebooks.client.gui.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

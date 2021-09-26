@@ -1,7 +1,6 @@
 package dev.bernasss12.bebooks.mixin;
 
-import dev.bernasss12.bebooks.client.gui.ModConfig;
-import dev.bernasss12.bebooks.client.gui.TooltipDrawerHelper;
+import dev.bernasss12.bebooks.BetterEnchantedBooks;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -15,10 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TitleScreenMixin {
     @Inject(at = @At("HEAD"), method = "init()V")
     private void init(CallbackInfo info) {
-        if (!ModConfig.configsFirstLoaded) {
-            TooltipDrawerHelper.populateEnchantmentIconList();
-            ModConfig.loadAndPopulateConfig();
-            ModConfig.saveConfig();
-        }
+        BetterEnchantedBooks.onTitleScreenLoaded();
     }
 }
