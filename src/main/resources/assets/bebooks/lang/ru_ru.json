@@ -1,0 +1,20 @@
+{
+  "category.bebooks.sorting_settings": "Сортировка чар в подсказке",
+  "category.bebooks.book_coloring_settings": "Настройки расцветки книг",
+  "category.bebooks.tooltip_settings": "Настройки иконок в подсказке",
+  "entry.bebooks.sorting_settings.sorting_mode": "Режим сортировки:",
+  "entry.bebooks.sorting_settings.keep_curses_at_bottom": "Отображать проклятия внизу списка чар",
+  "entry.bebooks.book_glint_settings.active": "Сияние чар на книгах",
+  "entry.bebooks.book_coloring_settings.active": "Цветные книги",
+  "entry.bebooks.book_coloring_settings.color_mode": "Способ назначения цвета:",
+  "entry.bebooks.book_coloring_settings.curse_color_override_others": "Цвет проклятий заменяет остальные",
+  "subcategory.bebooks.book_coloring_settings.enchantment_color": "Цвета чар",
+  "entry.bebooks.tooltip_settings.show_enchantment_max_level": "Отображать максимальный уровень чар",
+  "entry.bebooks.tooltip_settings.tooltip_mode": "Значки возможных предметов для зачаровывания",
+  "enum.bebooks.sorting_settings.alphabetically": "§aПо алфавиту",
+  "enum.bebooks.sorting_settings.custom": "§aПользовательский",
+  "enum.bebooks.sorting_settings.disabled": "§cОтключён",
+  "enum.bebooks.tooltip_settings.enabled": "§aВсегда",
+  "enum.bebooks.tooltip_settings.on_shift": "§aПо Shift",
+  "enum.bebooks.tooltip_settings.disabled": "§cНикогда"
+}
