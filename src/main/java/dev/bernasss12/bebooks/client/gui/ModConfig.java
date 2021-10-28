@@ -95,7 +95,7 @@ public class ModConfig {
 
         // Create data entries for all new enchantments
         int index = enchantmentDataMap.size();
-        for (Enchantment enchantment : Registry.ENCHANTMENT) {
+        for (var enchantment : Registry.ENCHANTMENT) {
             String id = Objects.requireNonNull(Registry.ENCHANTMENT.getId(enchantment)).toString();
             if (enchantmentDataMap.putIfAbsent(id, new EnchantmentData(enchantment, index, DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchantment, DEFAULT_BOOK_STRIP_COLOR))) == null)
                 index++;
@@ -269,7 +269,7 @@ public class ModConfig {
         DISABLED;
 
         public static TooltipSetting fromString(String string) {
-            for (TooltipSetting value : TooltipSetting.values()) {
+            for (var value : TooltipSetting.values()) {
                 if (value.toString().equals(string)) {
                     return value;
                 }
@@ -289,7 +289,7 @@ public class ModConfig {
         DISABLED;
 
         public static SortingSetting fromString(String string) {
-            for (SortingSetting value : SortingSetting.values()) {
+            for (var value : SortingSetting.values()) {
                 if (value.toString().equals(string)) {
                     return value;
                 }
