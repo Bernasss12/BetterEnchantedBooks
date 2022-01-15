@@ -22,8 +22,7 @@ public record IconTooltipComponent(List<ItemStack> icons) implements TooltipComp
         return icons.size() * 8;
     }
 
-    @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack _matrices, ItemRenderer itemRenderer, int z, TextureManager textureManager) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack _matrices, ItemRenderer itemRenderer, int z) {
         float scale = 0.5f;
         int scaledX = (int) (x / scale);
         int scaledY = (int) (y / scale);
