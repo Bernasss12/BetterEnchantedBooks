@@ -15,6 +15,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
+import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,18 +36,16 @@ public abstract class ItemStackMixin {
         return tag;
     }
 
-    // ItemStack.appendEnchantments's lambda
-    @SuppressWarnings("UnresolvedMixinReference")
-    @Inject(at = @At(value = "HEAD"), method = "method_17869(Ljava/util/List;Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/enchantment/Enchantment;)V")
+    @Dynamic("ItemStack.appendEnchantments's lambda")
+    @Inject(at = @At(value = "HEAD"), method = "method_17869", remap = false)
     private static void setShowEnchantmentMaxLevel(List<Text> tooltip, NbtCompound tag, Enchantment enchantment, CallbackInfo info) {
         if (ModConfig.doShowEnchantmentMaxLevel) {
             BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.set(true);
         }
     }
 
-    // ItemStack.appendEnchantments's lambda
-    @SuppressWarnings("UnresolvedMixinReference")
-    @Inject(at = @At(value = "TAIL"), method = "method_17869(Ljava/util/List;Lnet/minecraft/nbt/NbtCompound;Lnet/minecraft/enchantment/Enchantment;)V")
+    @Dynamic("ItemStack.appendEnchantments's lambda")
+    @Inject(at = @At(value = "TAIL"), method = "method_17869", remap = false)
     private static void addTooltipSpacers(List<Text> tooltip, NbtCompound tag, Enchantment enchantment, CallbackInfo info) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
