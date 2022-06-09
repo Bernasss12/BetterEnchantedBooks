@@ -19,7 +19,12 @@ public record IconTooltipDataText(List<ItemStack> icons) implements OrderedText,
     }
 
     @Override
-    public String asString() {
+    public TextContent getContent() {
+        return TextContent.EMPTY;
+    }
+
+    @Override
+    public String getString() {
         return "This is not supposed to be used as an actual string.";
     }
 
@@ -30,11 +35,11 @@ public record IconTooltipDataText(List<ItemStack> icons) implements OrderedText,
 
     @Override
     public MutableText copy() {
-        return new LiteralText(asString() + " Do not try to copy this.");
+        return Text.literal(getString() + " Do not try to copy this.");
     }
 
     @Override
-    public MutableText shallowCopy() {
+    public MutableText copyContentOnly() {
         return copy();
     }
 

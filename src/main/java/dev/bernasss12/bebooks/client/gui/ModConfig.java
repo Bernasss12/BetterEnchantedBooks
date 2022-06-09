@@ -15,8 +15,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
@@ -220,41 +219,41 @@ public class ModConfig {
         builder.setGlobalized(true);
 
         // Creating categories
-        ConfigCategory sortingCategory = builder.getOrCreateCategory(new TranslatableText("category.bebooks.sorting_settings"));
-        ConfigCategory bookColoring = builder.getOrCreateCategory(new TranslatableText("category.bebooks.book_coloring_settings"));
-        ConfigCategory tooltipCategory = builder.getOrCreateCategory(new TranslatableText("category.bebooks.tooltip_settings"));
+        ConfigCategory sortingCategory = builder.getOrCreateCategory(Text.translatable("category.bebooks.sorting_settings"));
+        ConfigCategory bookColoring = builder.getOrCreateCategory(Text.translatable("category.bebooks.book_coloring_settings"));
+        ConfigCategory tooltipCategory = builder.getOrCreateCategory(Text.translatable("category.bebooks.tooltip_settings"));
 
         // Adding entries to the categories
         // Sorting settings page
         builder.setDefaultBackgroundTexture(new Identifier("minecraft:textures/block/spruce_planks.png"));
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
-        sortingCategory.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.sorting_settings.sorting_mode"), SortingSetting.class, sortingSetting).setDefaultValue(DEFAULT_SORTING_SETTING).setSaveConsumer(setting -> sortingSetting = setting).build());
-        sortingCategory.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.sorting_settings.keep_curses_at_bottom"), doKeepCursesBelow).setSaveConsumer((doKeepCursesBelowInput) -> doKeepCursesBelow = doKeepCursesBelowInput).build());
+        sortingCategory.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.bebooks.sorting_settings.sorting_mode"), SortingSetting.class, sortingSetting).setDefaultValue(DEFAULT_SORTING_SETTING).setSaveConsumer(setting -> sortingSetting = setting).build());
+        sortingCategory.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.sorting_settings.keep_curses_at_bottom"), doKeepCursesBelow).setSaveConsumer((doKeepCursesBelowInput) -> doKeepCursesBelow = doKeepCursesBelowInput).build());
 
         // Coloring settings page
-        bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_glint_settings.active"), glintSetting).setSaveConsumer((showEnchantmentGlint) -> glintSetting = showEnchantmentGlint).build());
-        bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.active"), doColorBooks).setSaveConsumer((doColorBooksInput) -> doColorBooks = doColorBooksInput).build());
-        bookColoring.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.book_coloring_settings.color_mode"), SortingSetting.class, colorPrioritySetting).setDefaultValue(DEFAULT_COLOR_PRIORITY_SETTING).setSaveConsumer(setting -> colorPrioritySetting = setting).build());
-        bookColoring.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.book_coloring_settings.curse_color_override_others"), doCurseColorOverride).setSaveConsumer((doColorOverrideWhenCursedInput) -> doCurseColorOverride = doColorOverrideWhenCursedInput).build());
+        bookColoring.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.book_glint_settings.active"), glintSetting).setSaveConsumer((showEnchantmentGlint) -> glintSetting = showEnchantmentGlint).build());
+        bookColoring.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.book_coloring_settings.active"), doColorBooks).setSaveConsumer((doColorBooksInput) -> doColorBooks = doColorBooksInput).build());
+        bookColoring.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.bebooks.book_coloring_settings.color_mode"), SortingSetting.class, colorPrioritySetting).setDefaultValue(DEFAULT_COLOR_PRIORITY_SETTING).setSaveConsumer(setting -> colorPrioritySetting = setting).build());
+        bookColoring.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.book_coloring_settings.curse_color_override_others"), doCurseColorOverride).setSaveConsumer((doColorOverrideWhenCursedInput) -> doCurseColorOverride = doColorOverrideWhenCursedInput).build());
         ArrayList<AbstractConfigListEntry> enchantments = new ArrayList<>();
         for (var dataEntry : enchantmentDataMap.entrySet()) {
             EnchantmentData enchData = dataEntry.getValue();
             if (enchData.enchantment == null) continue; // not registered
 
             enchantments.add(entryBuilder
-                .startColorField(new LiteralText(enchData.getTranslatedName()), enchData.color)
+                .startColorField(Text.literal(enchData.getTranslatedName()), enchData.color)
                 .setDefaultValue(DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchData.enchantment, DEFAULT_BOOK_STRIP_COLOR))
                 .setSaveConsumer((guiEntryColor) -> {
                     EnchantmentData data = enchantmentDataMap.get(dataEntry.getKey());
                     data.color = guiEntryColor;
                 }).build());
         }
-        enchantments.sort(Comparator.comparing(entry -> entry.getFieldName().asString()));
-        bookColoring.addEntry(entryBuilder.startSubCategory(new TranslatableText("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build());
+        enchantments.sort(Comparator.comparing(entry -> entry.getFieldName().getString()));
+        bookColoring.addEntry(entryBuilder.startSubCategory(Text.translatable("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build());
 
         // Tooltip settings page
-        tooltipCategory.addEntry(entryBuilder.startBooleanToggle(new TranslatableText("entry.bebooks.tooltip_settings.show_enchantment_max_level"), doShowEnchantmentMaxLevel).setDefaultValue(DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL).setSaveConsumer((showEnchantmentMaxLevel) -> doShowEnchantmentMaxLevel = showEnchantmentMaxLevel).build());
-        tooltipCategory.addEntry(entryBuilder.startEnumSelector(new TranslatableText("entry.bebooks.tooltip_settings.tooltip_mode"), TooltipSetting.class, tooltipSetting).setDefaultValue(DEFAULT_TOOLTIP_SETTING).setSaveConsumer(setting -> tooltipSetting = setting).build());
+        tooltipCategory.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.tooltip_settings.show_enchantment_max_level"), doShowEnchantmentMaxLevel).setDefaultValue(DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL).setSaveConsumer((showEnchantmentMaxLevel) -> doShowEnchantmentMaxLevel = showEnchantmentMaxLevel).build());
+        tooltipCategory.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.bebooks.tooltip_settings.tooltip_mode"), TooltipSetting.class, tooltipSetting).setDefaultValue(DEFAULT_TOOLTIP_SETTING).setSaveConsumer(setting -> tooltipSetting = setting).build());
         builder.setSavingRunnable(() -> {
             BetterEnchantedBooks.clearCachedColors();
             saveConfig();
