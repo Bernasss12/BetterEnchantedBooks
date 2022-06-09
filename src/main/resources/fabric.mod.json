@@ -30,9 +30,9 @@
     "bebooks.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.9.0",
+    "fabricloader": ">=0.14.6",
     "fabric": "*",
-    "minecraft": ">=1.17.0",
-    "cloth-config2": ">=5.0.0"
+    "minecraft": ">=1.19.0",
+    "cloth-config2": ">=7.0.0"
   }
 }

@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,7 +25,7 @@ public abstract class EnchantmentMixin {
             method = "Lnet/minecraft/enchantment/Enchantment;getName(I)Lnet/minecraft/text/Text;")
     private void appendMaxEnchantmentLevel(int level, CallbackInfoReturnable<Text> info, MutableText enchantmentName) {
         if (ModConfig.doShowEnchantmentMaxLevel && (level != 1 || this.getMaxLevel() != 1) && BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.get()) {
-            enchantmentName.append("/").append(new TranslatableText("enchantment.level." + this.getMaxLevel()));
+            enchantmentName.append("/").append(Text.translatable("enchantment.level." + this.getMaxLevel()));
             BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.set(false);
         }
     }

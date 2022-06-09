@@ -5,7 +5,6 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

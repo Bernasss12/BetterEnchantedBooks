@@ -76,7 +76,7 @@ public final class NBTUtils {
         private boolean isCursed = false;
 
         public EnchantmentCompound(@NotNull NbtElement tag) {
-            if (tag.getType() != 10) {
+            if (tag.getType() != NbtElement.COMPOUND_TYPE) {
                 throw new AssertionError("tag is not a CompoundTag");
             }
 

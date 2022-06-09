@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 
@@ -22,8 +21,7 @@ public record IconTooltipComponent(List<ItemStack> icons) implements TooltipComp
         return icons.size() * 8;
     }
 
-    @Override
-    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack _matrices, ItemRenderer itemRenderer, int z, TextureManager textureManager) {
+    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack _matrices, ItemRenderer itemRenderer, int z) {
         float scale = 0.5f;
         int scaledX = (int) (x / scale);
         int scaledY = (int) (y / scale);
