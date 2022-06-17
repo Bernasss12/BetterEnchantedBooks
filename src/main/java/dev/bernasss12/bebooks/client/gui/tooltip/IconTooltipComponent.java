@@ -34,5 +34,6 @@ public record IconTooltipComponent(List<ItemStack> icons) implements TooltipComp
             itemRenderer.renderInGuiWithOverrides(icons.get(i), scaledX + scaledOffset * i, scaledY, -1);
         }
         matrices.pop();
+        RenderSystem.applyModelViewMatrix();
     }
 }
