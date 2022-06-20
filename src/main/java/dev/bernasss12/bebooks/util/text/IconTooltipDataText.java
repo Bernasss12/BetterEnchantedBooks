@@ -25,7 +25,7 @@ public record IconTooltipDataText(List<ItemStack> icons) implements OrderedText,
 
     @Override
     public String getString() {
-        return "This is not supposed to be used as an actual string.";
+        return "";
     }
 
     @Override
@@ -35,7 +35,7 @@ public record IconTooltipDataText(List<ItemStack> icons) implements OrderedText,
 
     @Override
     public MutableText copy() {
-        return Text.literal(getString() + " Do not try to copy this.");
+        return Text.literal(getString());
     }
 
     @Override
