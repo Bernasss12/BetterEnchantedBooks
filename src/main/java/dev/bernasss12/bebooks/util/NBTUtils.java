@@ -8,8 +8,8 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -83,7 +83,7 @@ public final class NBTUtils {
             this.compound = (NbtCompound) tag;
 
             Identifier identifier = Identifier.tryParse(compound.getString("id"));
-            this.enchantment = Registry.ENCHANTMENT.get(identifier);
+            this.enchantment = Registries.ENCHANTMENT.get(identifier);
 
             // Items can have non-registered enchantment tags on them
             if (identifier == null || enchantment == null) {
