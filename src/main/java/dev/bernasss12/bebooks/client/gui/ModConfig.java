@@ -15,9 +15,9 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -89,13 +89,13 @@ public class ModConfig {
     private static void populateEnchantmentData() {
         // Set enchantment values for all existing data entries
         for (var entry : enchantmentDataMap.entrySet()) {
-            entry.getValue().enchantment = Registry.ENCHANTMENT.get(Identifier.tryParse(entry.getKey()));
+            entry.getValue().enchantment = Registries.ENCHANTMENT.get(Identifier.tryParse(entry.getKey()));
         }
 
         // Create data entries for all new enchantments
         int index = enchantmentDataMap.size();
-        for (var enchantment : Registry.ENCHANTMENT) {
-            String id = Objects.requireNonNull(Registry.ENCHANTMENT.getId(enchantment)).toString();
+        for (var enchantment : Registries.ENCHANTMENT) {
+            String id = Objects.requireNonNull(Registries.ENCHANTMENT.getId(enchantment)).toString();
             if (enchantmentDataMap.putIfAbsent(id, new EnchantmentData(enchantment, index, DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchantment, DEFAULT_BOOK_STRIP_COLOR))) == null)
                 index++;
         }
