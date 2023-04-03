@@ -48,6 +48,10 @@ public abstract class ScreenMixin extends DrawableHelper {
             index = 1
     )
     private List<TooltipComponent> convertTooltipComponents(List<TooltipComponent> components) {
+        /*
+            FIXME
+            This is clearly not working but I am currently unable to run the game in debug mode for some reason.
+         */
         if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
             if (ModConfig.tooltipSetting == ModConfig.TooltipSetting.ENABLED || (ModConfig.tooltipSetting == ModConfig.TooltipSetting.ON_SHIFT && Screen.hasShiftDown())) {
                 return components.stream().map(

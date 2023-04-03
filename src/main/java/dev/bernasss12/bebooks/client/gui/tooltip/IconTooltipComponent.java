@@ -21,7 +21,8 @@ public record IconTooltipComponent(List<ItemStack> icons) implements TooltipComp
         return icons.size() * 8;
     }
 
-    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack _matrices, ItemRenderer itemRenderer, int z) {
+    @Override
+    public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack _matrices, ItemRenderer itemRenderer) {
         float scale = 0.5f;
         int scaledX = (int) (x / scale);
         int scaledY = (int) (y / scale);
@@ -30,7 +31,7 @@ public record IconTooltipComponent(List<ItemStack> icons) implements TooltipComp
         matrices.push();
         matrices.scale(0.5f, 0.5f, 1.0f);
         for(int i = 0; i < icons.size(); i++){
-            itemRenderer.renderInGuiWithOverrides(icons.get(i), scaledX + scaledOffset * i, scaledY, -1);
+            itemRenderer.renderInGuiWithOverrides(matrices, icons.get(i), scaledX + scaledOffset * i, scaledY, -1);
         }
         matrices.pop();
         RenderSystem.applyModelViewMatrix();
