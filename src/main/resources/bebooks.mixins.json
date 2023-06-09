@@ -4,11 +4,12 @@
   "package": "dev.bernasss12.bebooks.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "DrawContextMixin",
     "EnchantedBookItemMixin",
     "EnchantmentMixin",
+    "HandledScreenMixin",
     "ItemStackMixin",
     "OrderedTextTooltipComponentAccessor",
-    "ScreenMixin",
     "TitleScreenMixin"
   ],
   "injectors": {
