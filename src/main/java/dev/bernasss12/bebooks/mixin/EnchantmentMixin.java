@@ -22,7 +22,7 @@ public abstract class EnchantmentMixin {
 
     @Inject(at = @At(value = "TAIL"),
             locals = LocalCapture.CAPTURE_FAILHARD,
-            method = "Lnet/minecraft/enchantment/Enchantment;getName(I)Lnet/minecraft/text/Text;")
+            method = "getName(I)Lnet/minecraft/text/Text;")
     private void appendMaxEnchantmentLevel(int level, CallbackInfoReturnable<Text> info, MutableText enchantmentName) {
         if (ModConfig.doShowEnchantmentMaxLevel && (level != 1 || this.getMaxLevel() != 1) && BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.get()) {
             enchantmentName.append("/").append(Text.translatable("enchantment.level." + this.getMaxLevel()));

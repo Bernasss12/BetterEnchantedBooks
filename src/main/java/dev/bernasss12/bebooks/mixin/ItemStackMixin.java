@@ -46,7 +46,7 @@ public abstract class ItemStackMixin {
 
     @Dynamic("ItemStack.appendEnchantments's lambda")
     @Inject(at = @At(value = "TAIL"), method = "method_17869", remap = false)
-    private static void addTooltipSpacers(List<Text> tooltip, NbtCompound tag, Enchantment enchantment, CallbackInfo info) {
+    private static void addTooltipIcons(List<Text> tooltip, NbtCompound tag, Enchantment enchantment, CallbackInfo info) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
                 switch (ModConfig.tooltipSetting) {
