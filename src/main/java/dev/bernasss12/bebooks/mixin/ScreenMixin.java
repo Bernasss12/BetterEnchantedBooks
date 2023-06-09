@@ -28,13 +28,13 @@ import java.util.stream.Collectors;
 public abstract class ScreenMixin extends DrawableHelper {
 
     @Inject(at = @At(value = "HEAD"),
-            method = "Lnet/minecraft/client/gui/screen/Screen;renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V")
+            method = "renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V")
     private void setEnchantedItemStack(MatrixStack matrices, ItemStack stack, int x, int y, CallbackInfo info) {
         BetterEnchantedBooks.enchantedItemStack.set(stack);
     }
 
     @Inject(at = @At(value = "TAIL"),
-            method = "Lnet/minecraft/client/gui/screen/Screen;renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V")
+            method = "renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/item/ItemStack;II)V")
     private void forgetEnchantedItemStack(MatrixStack matrices, ItemStack stack, int x, int y, CallbackInfo info) {
         BetterEnchantedBooks.enchantedItemStack.set(ItemStack.EMPTY);
     }
@@ -44,23 +44,18 @@ public abstract class ScreenMixin extends DrawableHelper {
                     value = "INVOKE",
                     target = "Lnet/minecraft/client/gui/screen/Screen;renderTooltipFromComponents(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V"
             ),
-            method = "Lnet/minecraft/client/gui/screen/Screen;renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;Ljava/util/Optional;II)V",
+            method = "renderTooltip(Lnet/minecraft/client/util/math/MatrixStack;Ljava/util/List;Ljava/util/Optional;II)V",
             index = 1
     )
     private List<TooltipComponent> convertTooltipComponents(List<TooltipComponent> components) {
-        /*
-            FIXME
-            This is clearly not working but I am currently unable to run the game in debug mode for some reason.
-         */
         if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
             if (ModConfig.tooltipSetting == ModConfig.TooltipSetting.ENABLED || (ModConfig.tooltipSetting == ModConfig.TooltipSetting.ON_SHIFT && Screen.hasShiftDown())) {
                 return components.stream().map(
                         originalComponent -> {
-                            OrderedText text;
                             if (originalComponent instanceof OrderedTextTooltipComponent) {
-                                text = ((OrderedTextTooltipComponentAccessor) originalComponent).getText();
-                                if (text instanceof IconTooltipDataText) {
-                                    return new IconTooltipComponent(((IconTooltipDataText) text).icons());
+                                OrderedText text = ((OrderedTextTooltipComponentAccessor) originalComponent).getText();
+                                if (text instanceof IconTooltipDataText dataText) {
+                                    return new IconTooltipComponent(dataText.icons());
                                 }
                             }
                             return originalComponent;
