@@ -2,8 +2,13 @@
 
 [![downloads](http://cf.way2muchnoise.eu/369122.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/better-enchanted-books)
 [![versions](http://cf.way2muchnoise.eu/versions/369122.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/better-enchanted-books)
-[![Requires ClothConfig Api](http://cf.way2muchnoise.eu/title/fabric-api_Requires_%20.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
+[![Requires Fabric Api](http://cf.way2muchnoise.eu/title/306612_Requires_%20.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/fabric-api)
 [![Requires ClothConfig Api](http://cf.way2muchnoise.eu/title/cloth-config_Requires_%20.svg?badge_style=flat)](https://www.curseforge.com/minecraft/mc-mods/cloth-config/)
+
+[![downloads](https://badge.bernasss12.dev/modrinth/better-enchanted-books/downloads#3)](https://www.curseforge.com/minecraft/mc-mods/better-enchanted-books)
+[![versions](https://badge.bernasss12.dev/modrinth/better-enchanted-books/versions#1)](https://modrinth.com/mod/better-enchanted-books/versions)
+[![Requires Fabric Api](https://badge.bernasss12.dev/modrinth/fabric-api/name#1)](https://modrinth.com/mod/fabric-api)
+[![Requires ClothConfig Api](https://badge.bernasss12.dev/modrinth/cloth-config/name#1)](https://modrinth.com/mod/cloth-config)
 
 This is a mod that adds a couple of quality of life features into the Vanilla+ experience in Minecraft.
 It is 100% client sided, so the server doesn't need to have the mod installed for it to work.
