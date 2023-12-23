@@ -17,6 +17,6 @@
   "enum.bebooks.tooltip_settings.enabled": "§aВсегда",
   "enum.bebooks.tooltip_settings.on_shift": "§aПо Shift",
   "enum.bebooks.tooltip_settings.disabled": "§cНикогда",
-  "modMenu.summaryTranslation.bebooks": "Упрощение жизни любителям чар.",
-  "modMenu.descriptionTranslation.bebooks": "Раскрашивает ленты на чародейских книгах в зависимости от вида чар, упорядочивает чары в подсказках и выводит список совместимых предметов в описании книг."
+  "modmenu.summaryTranslation.bebooks": "Упрощение жизни любителям чар.",
+  "modmenu.descriptionTranslation.bebooks": "Раскрашивает ленты на чародейских книгах в зависимости от вида чар, упорядочивает чары в подсказках и выводит список совместимых предметов в описании книг."
 }
