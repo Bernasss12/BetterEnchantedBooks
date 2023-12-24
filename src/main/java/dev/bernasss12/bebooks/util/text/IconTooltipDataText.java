@@ -20,7 +20,7 @@ public record IconTooltipDataText(List<ItemStack> icons) implements OrderedText,
 
     @Override
     public TextContent getContent() {
-        return TextContent.EMPTY;
+        return new PlainTextContent.Literal("");
     }
 
     @Override
