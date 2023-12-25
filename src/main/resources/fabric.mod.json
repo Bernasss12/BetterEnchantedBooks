@@ -20,7 +20,7 @@
     "sources": "https://github.com/Bernasss12/BetterEnchantedBooks",
     "issues": "https://github.com/Bernasss12/BetterEnchantedBooks/issues"
   },
-  "license": "Unlicense",
+  "license": "MIT License",
   "icon": "assets/bebooks/icon.png",
   "environment": "client",
   "entrypoints": {
