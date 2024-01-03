@@ -1,15 +1,14 @@
 plugins {
     id 'fabric-loom' version '1.2-SNAPSHOT'
     id 'maven-publish'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 repositories {
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/" }
+    mavenCentral()
 }
-
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name + "-" + project.minecraft_version
 version = project.mod_version
@@ -29,6 +28,7 @@ dependencies {
 
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    modImplementation "net.fabricmc:fabric-language-kotlin:${fabric_kotlin_version}+kotlin.${kotlin_version}"
 }
 
 processResources {
@@ -52,4 +52,8 @@ java {
 
 jar {
     from "LICENSE"
+}
+
+kotlin {
+    jvmToolchain(17)
 }
