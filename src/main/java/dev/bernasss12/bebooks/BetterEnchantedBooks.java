@@ -1,25 +1,25 @@
 package dev.bernasss12.bebooks;
 
-import dev.bernasss12.bebooks.client.gui.ModConfig;
-import dev.bernasss12.bebooks.client.gui.ModConfig.EnchantmentData;
-import dev.bernasss12.bebooks.util.NBTUtils;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 
-import static dev.bernasss12.bebooks.client.gui.ModConstants.DEFAULT_BOOK_STRIP_COLOR;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+
+import dev.bernasss12.bebooks.client.gui.ModConfig;
+import dev.bernasss12.bebooks.client.gui.ModConfig.EnchantmentData;
+import static dev.bernasss12.bebooks.util.ModConstants.DEFAULT_BOOK_STRIP_COLOR;
+import dev.bernasss12.bebooks.util.NBTUtils;
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class BetterEnchantedBooks implements ClientModInitializer {
