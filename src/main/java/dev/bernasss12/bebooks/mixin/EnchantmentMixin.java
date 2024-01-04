@@ -1,6 +1,6 @@
 package dev.bernasss12.bebooks.mixin;
 
-import dev.bernasss12.bebooks.BetterEnchantedBooks;
+import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
 import dev.bernasss12.bebooks.client.gui.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,9 +24,9 @@ public abstract class EnchantmentMixin {
             locals = LocalCapture.CAPTURE_FAILHARD,
             method = "getName(I)Lnet/minecraft/text/Text;")
     private void appendMaxEnchantmentLevel(int level, CallbackInfoReturnable<Text> info, MutableText enchantmentName) {
-        if (ModConfig.doShowEnchantmentMaxLevel && (level != 1 || this.getMaxLevel() != 1) && BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.get()) {
+        if (ModConfig.doShowEnchantmentMaxLevel && (level != 1 || this.getMaxLevel() != 1) && BetterEnchantedBooksLegacy.shouldShowEnchantmentMaxLevel.get()) {
             enchantmentName.append("/").append(Text.translatable("enchantment.level." + this.getMaxLevel()));
-            BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.set(false);
+            BetterEnchantedBooksLegacy.shouldShowEnchantmentMaxLevel.set(false);
         }
     }
 }

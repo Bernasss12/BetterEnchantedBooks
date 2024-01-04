@@ -25,7 +25,10 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "dev.bernasss12.bebooks.BetterEnchantedBooks"
+      {
+        "adapter": "kotlin",
+        "value": "dev.bernasss12.bebooks.BetterEnchantedBooks::init"
+      }
     ],
     "modmenu": [
       "dev.bernasss12.bebooks.ModMenuIntegration"

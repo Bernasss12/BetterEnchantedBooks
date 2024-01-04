@@ -1,6 +1,6 @@
 package dev.bernasss12.bebooks.mixin;
 
-import dev.bernasss12.bebooks.BetterEnchantedBooks;
+import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.TitleScreen;
@@ -14,6 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class TitleScreenMixin {
     @Inject(at = @At("HEAD"), method = "init()V")
     private void init(CallbackInfo info) {
-        BetterEnchantedBooks.onTitleScreenLoaded();
+        BetterEnchantedBooksLegacy.onTitleScreenLoaded();
     }
 }

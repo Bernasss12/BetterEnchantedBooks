@@ -1,6 +1,6 @@
 package dev.bernasss12.bebooks.mixin;
 
-import dev.bernasss12.bebooks.BetterEnchantedBooks;
+import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
 import dev.bernasss12.bebooks.client.gui.ModConfig;
 import dev.bernasss12.bebooks.client.gui.tooltip.IconTooltipComponent;
 import dev.bernasss12.bebooks.util.text.IconTooltipDataText;
@@ -32,12 +32,12 @@ public abstract class DrawContextMixin {
         at = @At("HEAD")
     )
     private void setEnchantedItemStack(TextRenderer textRenderer, ItemStack stack, int x, int y, CallbackInfo ci) {
-        BetterEnchantedBooks.enchantedItemStack.set(stack);
+        BetterEnchantedBooksLegacy.enchantedItemStack.set(stack);
     }
 
     @Inject(method = "drawItemTooltip(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V", at = @At(value = "TAIL"))
     private void forgetEnchantedItemStack(TextRenderer textRenderer, ItemStack stack, int x, int y, CallbackInfo ci) {
-        BetterEnchantedBooks.enchantedItemStack.set(ItemStack.EMPTY);
+        BetterEnchantedBooksLegacy.enchantedItemStack.set(ItemStack.EMPTY);
     }
 
     @ModifyVariable(
@@ -46,7 +46,7 @@ public abstract class DrawContextMixin {
         argsOnly = true
     )
     private List<TooltipComponent> convertTooltipComponents(List<TooltipComponent> components) {
-        if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
+        if (BetterEnchantedBooksLegacy.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
             if (ModConfig.tooltipSetting == ModConfig.TooltipSetting.ENABLED || (ModConfig.tooltipSetting == ModConfig.TooltipSetting.ON_SHIFT && Screen.hasShiftDown())) {
                 return components.stream().map(
                     originalComponent -> {

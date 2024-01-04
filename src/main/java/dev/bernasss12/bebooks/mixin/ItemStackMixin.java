@@ -1,6 +1,6 @@
 package dev.bernasss12.bebooks.mixin;
 
-import dev.bernasss12.bebooks.BetterEnchantedBooks;
+import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
 import dev.bernasss12.bebooks.client.gui.ModConfig;
 import dev.bernasss12.bebooks.util.NBTUtils;
 import dev.bernasss12.bebooks.util.text.IconTooltipDataText;
@@ -40,7 +40,7 @@ public abstract class ItemStackMixin {
     @Inject(at = @At(value = "HEAD"), method = "method_17869", remap = false)
     private static void setShowEnchantmentMaxLevel(List<Text> tooltip, NbtCompound tag, Enchantment enchantment, CallbackInfo info) {
         if (ModConfig.doShowEnchantmentMaxLevel) {
-            BetterEnchantedBooks.shouldShowEnchantmentMaxLevel.set(true);
+            BetterEnchantedBooksLegacy.shouldShowEnchantmentMaxLevel.set(true);
         }
     }
 
@@ -48,14 +48,14 @@ public abstract class ItemStackMixin {
     @Inject(at = @At(value = "TAIL"), method = "method_17869", remap = false)
     private static void addTooltipIcons(List<Text> tooltip, NbtCompound tag, Enchantment enchantment, CallbackInfo info) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
-            if (BetterEnchantedBooks.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
+            if (BetterEnchantedBooksLegacy.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
                 switch (ModConfig.tooltipSetting) {
                     case ENABLED:
-                        tooltip.add(new IconTooltipDataText(BetterEnchantedBooks.getApplicableItems(enchantment)));
+                        tooltip.add(new IconTooltipDataText(BetterEnchantedBooksLegacy.getApplicableItems(enchantment)));
                         break;
                     case ON_SHIFT:
                         if (Screen.hasShiftDown())
-                            tooltip.add(new IconTooltipDataText(BetterEnchantedBooks.getApplicableItems(enchantment)));
+                            tooltip.add(new IconTooltipDataText(BetterEnchantedBooksLegacy.getApplicableItems(enchantment)));
                         break;
                     case DISABLED:
                         break;

@@ -23,8 +23,8 @@ import net.minecraft.util.Identifier;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import dev.bernasss12.bebooks.BetterEnchantedBooks;
-import static dev.bernasss12.bebooks.BetterEnchantedBooks.LOGGER;
+import static dev.bernasss12.bebooks.BetterEnchantedBooksLegacy.LOGGER;
+import dev.bernasss12.bebooks.util.BookColorManager;
 import static dev.bernasss12.bebooks.util.ModConstants.*;
 import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
@@ -261,7 +261,7 @@ public class ModConfig {
         tooltipCategory.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.tooltip_settings.show_enchantment_max_level"), doShowEnchantmentMaxLevel).setDefaultValue(DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL).setSaveConsumer((showEnchantmentMaxLevel) -> doShowEnchantmentMaxLevel = showEnchantmentMaxLevel).build());
         tooltipCategory.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.bebooks.tooltip_settings.tooltip_mode"), TooltipSetting.class, tooltipSetting).setDefaultValue(DEFAULT_TOOLTIP_SETTING).setSaveConsumer(setting -> tooltipSetting = setting).build());
         builder.setSavingRunnable(() -> {
-            BetterEnchantedBooks.clearCachedColors();
+            BookColorManager.clear();
             saveConfig();
         });
 
