@@ -44,6 +44,7 @@
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
     "minecraft": ">=${minecraft_version}",
-    "cloth-config2": ">=${cloth_config_2_version}"
+    "cloth-config2": ">=${cloth_config_2_version}",
+    "fabric-language-kotlin": ">=${fabric_language_kotlin}"
   }
 }
