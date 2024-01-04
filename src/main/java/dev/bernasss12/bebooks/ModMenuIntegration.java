@@ -2,7 +2,7 @@ package dev.bernasss12.bebooks;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import dev.bernasss12.bebooks.client.gui.ModConfigLegacy;
+import dev.bernasss12.bebooks.config.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -10,6 +10,6 @@ import net.fabricmc.api.Environment;
 public class ModMenuIntegration implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> ModConfigLegacy.getConfigScreen().build();
+        return parent -> ModConfig.INSTANCE.getConfigScreen();
     }
 }

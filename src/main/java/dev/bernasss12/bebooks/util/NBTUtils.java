@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier;
 
 import dev.bernasss12.bebooks.client.gui.ModConfigLegacy;
 import dev.bernasss12.bebooks.config.ModConfig;
+import dev.bernasss12.bebooks.config.SortingMode;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 @Environment(EnvType.CLIENT)
 public final class NBTUtils {
 
-    public static Stream<EnchantmentCompound> sorted(NbtList listTag, ModConfigLegacy.SortingSetting mode, boolean cursesBelow) {
+    public static Stream<EnchantmentCompound> sorted(NbtList listTag, SortingMode mode, boolean cursesBelow) {
         Comparator<EnchantmentCompound> comparator;
 
         if (cursesBelow) {
@@ -55,7 +56,7 @@ public final class NBTUtils {
         return listTag.stream().map(EnchantmentCompound::new).anyMatch(EnchantmentCompound::isCursed);
     }
 
-    public static String getPriorityEnchantmentId(NbtList listTag, ModConfigLegacy.SortingSetting mode) {
+    public static String getPriorityEnchantmentId(NbtList listTag, SortingMode mode) {
         Stream<EnchantmentCompound> candidates = sorted(listTag, mode, true)
             .filter(EnchantmentCompound::isRegistered);
 

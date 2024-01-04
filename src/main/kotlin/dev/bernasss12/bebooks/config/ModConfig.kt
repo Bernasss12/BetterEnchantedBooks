@@ -1,17 +1,25 @@
 package dev.bernasss12.bebooks.config
 
 import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy
-import dev.bernasss12.bebooks.client.gui.ModConfigLegacy.SortingSetting
-import dev.bernasss12.bebooks.client.gui.ModConfigLegacy.TooltipSetting
+import dev.bernasss12.bebooks.client.gui.ModConfigLegacy.enchantmentDataMap
+import dev.bernasss12.bebooks.client.gui.ModConfigLegacy.saveConfig
+import dev.bernasss12.bebooks.util.BookColorManager.clear
 import dev.bernasss12.bebooks.util.ModConstants.CONFIG_DIR
+import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_BOOK_STRIP_COLOR
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_COLOR_BOOKS
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_COLOR_MODE
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_CURSE_COLOR_OVERRIDE
+import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_ENCHANTMENT_COLORS
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_GLINT_SETTING
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_KEEP_CURSES_BELOW
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_SORTING_MODE
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_TOOLTIP_MODE
+import me.shedaniel.clothconfig2.api.AbstractConfigListEntry
+import me.shedaniel.clothconfig2.api.ConfigBuilder
+import net.minecraft.client.gui.screen.Screen
+import net.minecraft.text.Text
+import net.minecraft.util.Identifier
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -24,8 +32,8 @@ object ModConfig {
     }
 
     // Sorting settings
-    var sortingMode: SortingSetting
-        get() = properties.getPropertyOrDefault("sorting_mode", DEFAULT_SORTING_MODE, SortingSetting::fromString)
+    var sortingMode: SortingMode
+        get() = properties.getPropertyOrDefault("sorting_mode", DEFAULT_SORTING_MODE, SortingMode::fromString)
         set(value) = properties.setProperty("sorting_mode", value)
     var keepCursesBelow: Boolean
         get() = properties.getPropertyOrDefault("keep_curses_below", DEFAULT_KEEP_CURSES_BELOW, String::toBoolean)
@@ -35,8 +43,8 @@ object ModConfig {
     var showMaxEnchantmentLevel: Boolean
         get() = properties.getPropertyOrDefault("show_max_enchantment_level", DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL, String::toBoolean)
         set(value) = properties.setProperty("show_max_enchantment_level", value)
-    var tooltipMode: TooltipSetting
-        get() = properties.getPropertyOrDefault("tooltip_mode", DEFAULT_TOOLTIP_MODE, TooltipSetting::fromString)
+    var tooltipMode: TooltipMode
+        get() = properties.getPropertyOrDefault("tooltip_mode", DEFAULT_TOOLTIP_MODE, TooltipMode::fromString)
         set(value) = properties.setProperty("tooltip_mode", value)
 
 
@@ -47,8 +55,8 @@ object ModConfig {
     var overrideCurseColor: Boolean
         get() = properties.getPropertyOrDefault("override_curse_color", DEFAULT_CURSE_COLOR_OVERRIDE, String::toBoolean)
         set(value) = properties.setProperty("override_curse_color", value)
-    var colorMode: SortingSetting
-        get() = properties.getPropertyOrDefault("color_mode", DEFAULT_COLOR_MODE, SortingSetting::fromString)
+    var colorMode: SortingMode
+        get() = properties.getPropertyOrDefault("color_mode", DEFAULT_COLOR_MODE, SortingMode::fromString)
         set(value) = properties.setProperty("color_mode", value)
 
     // Remove enchantment glint
@@ -93,7 +101,120 @@ object ModConfig {
         )
     }
 
-    private fun Properties.setProperty(key: String, any: Any): Unit {
+    private fun Properties.setProperty(key: String, any: Any) {
         setProperty(key, any.toString())
     }
+
+    fun getConfigScreen(): Screen = ConfigBuilder.create().apply {
+        defaultBackgroundTexture = Identifier("minecraft:textures/block/spruce_planks.png")
+        setGlobalized(true)// Creating categories
+        val entryBuilder = entryBuilder()
+
+        getOrCreateCategory(Text.translatable("category.bebooks.sorting_settings")).apply {
+            // Sorting settings page
+            addEntry(
+                entryBuilder.startEnumSelector(
+                    Text.translatable("entry.bebooks.sorting_settings.sorting_mode"),
+                    SortingMode::class.java,
+                    sortingMode
+                ).apply {
+                    setDefaultValue(DEFAULT_SORTING_MODE)
+                    setSaveConsumer { sortingMode = it }
+                }.build()
+            )
+            addEntry(
+                entryBuilder.startBooleanToggle(
+                    Text.translatable("entry.bebooks.sorting_settings.keep_curses_at_bottom"),
+                    keepCursesBelow
+                ).apply {
+                    setDefaultValue(DEFAULT_KEEP_CURSES_BELOW)
+                    setSaveConsumer { keepCursesBelow = it }
+                }.build()
+            )
+        }
+
+        getOrCreateCategory(Text.translatable("category.bebooks.book_coloring_settings")).apply {
+            // Coloring settings page
+            addEntry(
+                entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.book_glint_settings.active"), enchantedBookGlint).apply {
+                    setDefaultValue(DEFAULT_GLINT_SETTING)
+                    setSaveConsumer { enchantedBookGlint = it }
+                }.build()
+            )
+            addEntry(
+                entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.book_coloring_settings.active"), colorBooks).apply {
+                    setDefaultValue(DEFAULT_COLOR_BOOKS)
+                    setSaveConsumer { colorBooks = it }
+                }.build()
+            )
+            addEntry(
+                entryBuilder.startEnumSelector(
+                    Text.translatable("entry.bebooks.book_coloring_settings.color_mode"), SortingMode::class.java,
+                    colorMode
+                ).apply {
+                    setDefaultValue(DEFAULT_COLOR_MODE)
+                    setSaveConsumer { colorMode = it }
+                }.build()
+            )
+            addEntry(
+                entryBuilder.startBooleanToggle(
+                    Text.translatable("entry.bebooks.book_coloring_settings.curse_color_override_others"),
+                    overrideCurseColor
+                ).apply {
+                    setDefaultValue(DEFAULT_CURSE_COLOR_OVERRIDE)
+                    setSaveConsumer { overrideCurseColor = it }
+                }.build()
+            )
+
+            val enchantments = ArrayList<AbstractConfigListEntry<*>>()
+            for ((key, enchantmentData) in enchantmentDataMap) {
+                if (enchantmentData.enchantment == null) continue  // not registered
+                enchantments.add(
+                    entryBuilder.startColorField(Text.literal(enchantmentData.translatedName), enchantmentData.color).apply {
+                        setDefaultValue(DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchantmentData.enchantment, DEFAULT_BOOK_STRIP_COLOR))
+                        setSaveConsumer { guiEntryColor: Int ->
+                            val data = enchantmentDataMap[key]!!
+                            data.color = guiEntryColor
+                        }
+                    }.build()
+                )
+            }
+            enchantments.sortWith(Comparator.comparing { entry: AbstractConfigListEntry<*> ->
+                entry.fieldName.string
+            })
+            addEntry(
+                entryBuilder.startSubCategory(Text.translatable("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build()
+            )
+        }
+
+        getOrCreateCategory(Text.translatable("category.bebooks.tooltip_settings")).apply {
+            // Tooltip settings page
+            addEntry(
+                entryBuilder.startBooleanToggle(
+                    Text.translatable("entry.bebooks.tooltip_settings.show_enchantment_max_level"),
+                    showMaxEnchantmentLevel
+                ).apply {
+                    setDefaultValue(DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL)
+                    setSaveConsumer { showMaxEnchantmentLevel = it }
+                }.build()
+            )
+            addEntry(
+                entryBuilder.startEnumSelector(
+                    Text.translatable("entry.bebooks.tooltip_settings.tooltip_mode"), TooltipMode::class.java,
+                    tooltipMode
+                ).apply {
+                    setDefaultValue(DEFAULT_TOOLTIP_MODE)
+                    setSaveConsumer { tooltipMode = it }
+                }.build()
+            )
+        }
+
+        setSavingRunnable {
+            save()
+            clear()
+
+            // TODO
+            saveConfig()
+        }
+    }.build()
 }

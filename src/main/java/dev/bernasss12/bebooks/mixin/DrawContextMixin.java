@@ -13,9 +13,9 @@ import net.minecraft.item.Items;
 import net.minecraft.text.OrderedText;
 
 import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
-import dev.bernasss12.bebooks.client.gui.ModConfigLegacy;
 import dev.bernasss12.bebooks.client.gui.tooltip.IconTooltipComponent;
 import dev.bernasss12.bebooks.config.ModConfig;
+import dev.bernasss12.bebooks.config.TooltipMode;
 import dev.bernasss12.bebooks.util.text.IconTooltipDataText;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -50,8 +50,8 @@ public abstract class DrawContextMixin {
     private List<TooltipComponent> convertTooltipComponents(List<TooltipComponent> components) {
         if (BetterEnchantedBooksLegacy.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
             if (
-                    ModConfig.INSTANCE.getTooltipMode() == ModConfigLegacy.TooltipSetting.ENABLED || (
-                            ModConfig.INSTANCE.getTooltipMode() == ModConfigLegacy.TooltipSetting.ON_SHIFT && Screen.hasShiftDown())) {
+                    ModConfig.INSTANCE.getTooltipMode() == TooltipMode.ENABLED || (
+                            ModConfig.INSTANCE.getTooltipMode() == TooltipMode.ON_SHIFT && Screen.hasShiftDown())) {
                 return components.stream().map(
                     originalComponent -> {
                         if (originalComponent instanceof OrderedTextTooltipComponent) {

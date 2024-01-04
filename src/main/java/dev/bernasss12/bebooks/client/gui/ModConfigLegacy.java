@@ -2,8 +2,6 @@ package dev.bernasss12.bebooks.client.gui;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,27 +11,15 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import static dev.bernasss12.bebooks.BetterEnchantedBooksLegacy.LOGGER;
-import dev.bernasss12.bebooks.config.ModConfig;
-import dev.bernasss12.bebooks.util.BookColorManager;
 import static dev.bernasss12.bebooks.util.ModConstants.DEFAULT_BOOK_STRIP_COLOR;
 import static dev.bernasss12.bebooks.util.ModConstants.DEFAULT_CHECKED_ITEMS_LIST;
-import static dev.bernasss12.bebooks.util.ModConstants.DEFAULT_COLOR_MODE;
 import static dev.bernasss12.bebooks.util.ModConstants.DEFAULT_ENCHANTMENT_COLORS;
-import static dev.bernasss12.bebooks.util.ModConstants.DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL;
-import static dev.bernasss12.bebooks.util.ModConstants.DEFAULT_SORTING_MODE;
-import static dev.bernasss12.bebooks.util.ModConstants.DEFAULT_TOOLTIP_MODE;
-import me.shedaniel.clothconfig2.api.AbstractConfigListEntry;
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import me.shedaniel.clothconfig2.api.ConfigCategory;
-import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
-import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -105,120 +91,6 @@ public class ModConfigLegacy {
 
     public static void saveConfig() {
         saveEnchantmentData();
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static ConfigBuilder getConfigScreen() {
-        // Base config builder
-        ConfigBuilder builder = ConfigBuilder.create();
-        builder.setDefaultBackgroundTexture(new Identifier("minecraft:textures/block/spruce_planks.png"));
-        builder.setGlobalized(true);
-
-        // Creating categories
-        ConfigCategory sortingCategory = builder.getOrCreateCategory(Text.translatable("category.bebooks.sorting_settings"));
-        ConfigCategory bookColoring = builder.getOrCreateCategory(Text.translatable("category.bebooks.book_coloring_settings"));
-        ConfigCategory tooltipCategory = builder.getOrCreateCategory(Text.translatable("category.bebooks.tooltip_settings"));
-
-        // Adding entries to the categories
-        // Sorting settings page
-        builder.setDefaultBackgroundTexture(new Identifier("minecraft:textures/block/spruce_planks.png"));
-        ConfigEntryBuilder entryBuilder = builder.entryBuilder();
-        sortingCategory.addEntry(entryBuilder.startEnumSelector(Text.translatable("entry.bebooks.sorting_settings.sorting_mode"), SortingSetting.class,
-                ModConfig.INSTANCE.getSortingMode()).setDefaultValue(
-                DEFAULT_SORTING_MODE).setSaveConsumer(ModConfig.INSTANCE::setSortingMode).build());
-        sortingCategory.addEntry(entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.sorting_settings.keep_curses_at_bottom"),
-                ModConfig.INSTANCE.getKeepCursesBelow()).setSaveConsumer(
-                ModConfig.INSTANCE::setKeepCursesBelow).build());
-
-        // Coloring settings page
-        bookColoring.addEntry(
-                entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.book_glint_settings.active"), ModConfig.INSTANCE.getEnchantedBookGlint())
-                        .setSaveConsumer(ModConfig.INSTANCE::setEnchantedBookGlint).build());
-        bookColoring.addEntry(
-                entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.book_coloring_settings.active"), ModConfig.INSTANCE.getColorBooks())
-                        .setSaveConsumer(ModConfig.INSTANCE::setColorBooks).build());
-        bookColoring.addEntry(
-                entryBuilder.startEnumSelector(Text.translatable("entry.bebooks.book_coloring_settings.color_mode"), SortingSetting.class,
-                                ModConfig.INSTANCE.getColorMode())
-                        .setDefaultValue(DEFAULT_COLOR_MODE).setSaveConsumer(ModConfig.INSTANCE::setColorMode).build());
-        bookColoring.addEntry(
-                entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.book_coloring_settings.curse_color_override_others"),
-                                ModConfig.INSTANCE.getOverrideCurseColor())
-                        .setSaveConsumer(ModConfig.INSTANCE::setOverrideCurseColor).build());
-        ArrayList<AbstractConfigListEntry> enchantments = new ArrayList<>();
-        for (var dataEntry : enchantmentDataMap.entrySet()) {
-            EnchantmentData enchData = dataEntry.getValue();
-            if (enchData.enchantment == null) continue; // not registered
-
-            enchantments.add(entryBuilder
-                    .startColorField(Text.literal(enchData.getTranslatedName()), enchData.color)
-                    .setDefaultValue(DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchData.enchantment, DEFAULT_BOOK_STRIP_COLOR))
-                    .setSaveConsumer((guiEntryColor) -> {
-                        EnchantmentData data = enchantmentDataMap.get(dataEntry.getKey());
-                        data.color = guiEntryColor;
-                    }).build());
-        }
-        enchantments.sort(Comparator.comparing(entry -> entry.getFieldName().getString()));
-        bookColoring.addEntry(
-                entryBuilder.startSubCategory(Text.translatable("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build());
-
-        // Tooltip settings page
-        tooltipCategory.addEntry(
-                entryBuilder.startBooleanToggle(Text.translatable("entry.bebooks.tooltip_settings.show_enchantment_max_level"),
-                                ModConfig.INSTANCE.getShowMaxEnchantmentLevel())
-                        .setDefaultValue(DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL)
-                        .setSaveConsumer(ModConfig.INSTANCE::setShowMaxEnchantmentLevel).build());
-        tooltipCategory.addEntry(
-                entryBuilder.startEnumSelector(Text.translatable("entry.bebooks.tooltip_settings.tooltip_mode"), TooltipSetting.class,
-                                ModConfig.INSTANCE.getTooltipMode())
-                        .setDefaultValue(DEFAULT_TOOLTIP_MODE).setSaveConsumer(ModConfig.INSTANCE::setTooltipMode).build());
-        builder.setSavingRunnable(() -> {
-            ModConfig.INSTANCE.save();
-            BookColorManager.clear();
-            saveConfig();
-        });
-
-        return builder;
-    }
-
-    public enum TooltipSetting implements SelectionListEntry.Translatable {
-        ENABLED,
-        ON_SHIFT,
-        DISABLED;
-
-        public static TooltipSetting fromString(String string) {
-            for (var value : TooltipSetting.values()) {
-                if (value.toString().equals(string)) {
-                    return value;
-                }
-            }
-            return DEFAULT_TOOLTIP_MODE;
-        }
-
-        @Override
-        public @NotNull String getKey() {
-            return "enum.bebooks.tooltip_settings." + toString().toLowerCase();
-        }
-    }
-
-    public enum SortingSetting implements SelectionListEntry.Translatable {
-        ALPHABETICALLY,
-        CUSTOM,
-        DISABLED;
-
-        public static SortingSetting fromString(String string) {
-            for (var value : SortingSetting.values()) {
-                if (value.toString().equals(string)) {
-                    return value;
-                }
-            }
-            return DEFAULT_SORTING_MODE;
-        }
-
-        @Override
-        public @NotNull String getKey() {
-            return "enum.bebooks.sorting_settings." + toString().toLowerCase();
-        }
     }
 
     // Note: transient fields are ignored by Gson. When loaded, the constructor won't be called.

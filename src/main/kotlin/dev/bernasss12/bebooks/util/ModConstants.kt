@@ -1,7 +1,7 @@
 package dev.bernasss12.bebooks.util
 
-import dev.bernasss12.bebooks.client.gui.ModConfigLegacy.SortingSetting
-import dev.bernasss12.bebooks.client.gui.ModConfigLegacy.TooltipSetting
+import dev.bernasss12.bebooks.config.SortingMode
+import dev.bernasss12.bebooks.config.TooltipMode
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.Enchantments.*
@@ -80,18 +80,12 @@ object ModConstants {
     )
 
     const val DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL: Boolean = false
-
-    @JvmField // TODO remove when not used by java class
-    val DEFAULT_TOOLTIP_MODE: TooltipSetting = TooltipSetting.ON_SHIFT
-
-    @JvmField // TODO remove when not used by java class
-    val DEFAULT_SORTING_MODE: SortingSetting = SortingSetting.ALPHABETICALLY
+    val DEFAULT_TOOLTIP_MODE: TooltipMode = TooltipMode.ON_SHIFT
+    val DEFAULT_SORTING_MODE: SortingMode = SortingMode.ALPHABETICALLY
     const val DEFAULT_KEEP_CURSES_BELOW: Boolean = true
     const val DEFAULT_COLOR_BOOKS: Boolean = true
     const val DEFAULT_CURSE_COLOR_OVERRIDE: Boolean = true
-
-    @JvmField // TODO remove when not used by java class
-    val DEFAULT_COLOR_MODE: SortingSetting = SortingSetting.ALPHABETICALLY
+    val DEFAULT_COLOR_MODE: SortingMode = SortingMode.ALPHABETICALLY
 
     @Suppress("MayBeConstant") // TODO Cannot be constant because it is a JvmField
     @JvmField // TODO remove when not used by java class
