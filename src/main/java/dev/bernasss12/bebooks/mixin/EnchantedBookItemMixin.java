@@ -1,9 +1,10 @@
 package dev.bernasss12.bebooks.mixin;
 
-import dev.bernasss12.bebooks.client.gui.ModConfig;
+import net.minecraft.item.EnchantedBookItem;
+
+import dev.bernasss12.bebooks.config.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.item.EnchantedBookItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,6 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EnchantedBookItemMixin {
     @Inject(method = "hasGlint", at = @At(value = "RETURN"), cancellable = true)
     public void hasGlintReturn(CallbackInfoReturnable<Boolean> info){
-        info.setReturnValue(ModConfig.glintSetting);
+        info.setReturnValue(ModConfig.INSTANCE.getEnchantedBookGlint());
     }
 }

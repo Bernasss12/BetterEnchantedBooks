@@ -1,8 +1,9 @@
 package dev.bernasss12.bebooks.util;
 
-import dev.bernasss12.bebooks.client.gui.ModConfig;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import java.util.Comparator;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.nbt.NbtCompound;
@@ -10,16 +11,17 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.stream.Stream;
+import dev.bernasss12.bebooks.client.gui.ModConfigLegacy;
+import dev.bernasss12.bebooks.config.ModConfig;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import org.jetbrains.annotations.NotNull;
 
 @Environment(EnvType.CLIENT)
 public final class NBTUtils {
 
-    public static Stream<EnchantmentCompound> sorted(NbtList listTag, ModConfig.SortingSetting mode, boolean cursesBelow) {
+    public static Stream<EnchantmentCompound> sorted(NbtList listTag, ModConfigLegacy.SortingSetting mode, boolean cursesBelow) {
         Comparator<EnchantmentCompound> comparator;
 
         if (cursesBelow) {
@@ -53,12 +55,12 @@ public final class NBTUtils {
         return listTag.stream().map(EnchantmentCompound::new).anyMatch(EnchantmentCompound::isCursed);
     }
 
-    public static String getPriorityEnchantmentId(NbtList listTag, ModConfig.SortingSetting mode) {
+    public static String getPriorityEnchantmentId(NbtList listTag, ModConfigLegacy.SortingSetting mode) {
         Stream<EnchantmentCompound> candidates = sorted(listTag, mode, true)
             .filter(EnchantmentCompound::isRegistered);
 
         Optional<EnchantmentCompound> priority;
-        if (ModConfig.doCurseColorOverride && hasCurses(listTag)) {
+        if (ModConfig.INSTANCE.getOverrideCurseColor() && hasCurses(listTag)) {
             priority = candidates.reduce((a, b) -> b); // last element
         } else {
             priority = candidates.findFirst();
@@ -98,13 +100,13 @@ public final class NBTUtils {
         }
 
         private void lazyInit() {
-            ModConfig.EnchantmentData enchantmentData = ModConfig.enchantmentDataMap.get(this.id);
+            ModConfigLegacy.EnchantmentData enchantmentData = ModConfigLegacy.enchantmentDataMap.get(this.id);
             if (enchantmentData != null) {
                 this.translatedName = enchantmentData.getTranslatedName();
                 this.index = enchantmentData.orderIndex;
             } else {
                 this.translatedName = I18n.translate(this.enchantment.getTranslationKey());
-                this.index = ModConfig.enchantmentDataMap.size();
+                this.index = ModConfigLegacy.enchantmentDataMap.size();
             }
         }
 

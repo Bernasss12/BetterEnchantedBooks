@@ -1,14 +1,17 @@
 package dev.bernasss12.bebooks.util
 
-import dev.bernasss12.bebooks.client.gui.ModConfig.SortingSetting
-import dev.bernasss12.bebooks.client.gui.ModConfig.TooltipSetting
+import dev.bernasss12.bebooks.client.gui.ModConfigLegacy.SortingSetting
+import dev.bernasss12.bebooks.client.gui.ModConfigLegacy.TooltipSetting
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.Enchantments.*
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items.*
+import java.nio.file.Path
 
 object ModConstants {
     const val SETTINGS_VERSION: Int = 2
+    val CONFIG_DIR: Path = FabricLoader.getInstance().configDir.resolve("bebooks")
 
     @JvmField // TODO remove when not used by java class
     val DEFAULT_CHECKED_ITEMS_LIST: List<ItemStack> = listOf(
@@ -79,16 +82,16 @@ object ModConstants {
     const val DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL: Boolean = false
 
     @JvmField // TODO remove when not used by java class
-    val DEFAULT_TOOLTIP_SETTING: TooltipSetting = TooltipSetting.ON_SHIFT
+    val DEFAULT_TOOLTIP_MODE: TooltipSetting = TooltipSetting.ON_SHIFT
 
     @JvmField // TODO remove when not used by java class
-    val DEFAULT_SORTING_SETTING: SortingSetting = SortingSetting.ALPHABETICALLY
+    val DEFAULT_SORTING_MODE: SortingSetting = SortingSetting.ALPHABETICALLY
     const val DEFAULT_KEEP_CURSES_BELOW: Boolean = true
     const val DEFAULT_COLOR_BOOKS: Boolean = true
     const val DEFAULT_CURSE_COLOR_OVERRIDE: Boolean = true
 
     @JvmField // TODO remove when not used by java class
-    val DEFAULT_COLOR_PRIORITY_SETTING: SortingSetting = SortingSetting.ALPHABETICALLY
+    val DEFAULT_COLOR_MODE: SortingSetting = SortingSetting.ALPHABETICALLY
 
     @Suppress("MayBeConstant") // TODO Cannot be constant because it is a JvmField
     @JvmField // TODO remove when not used by java class

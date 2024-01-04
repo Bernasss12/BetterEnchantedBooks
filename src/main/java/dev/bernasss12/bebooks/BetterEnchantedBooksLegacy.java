@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 
-import dev.bernasss12.bebooks.client.gui.ModConfig;
+import dev.bernasss12.bebooks.client.gui.ModConfigLegacy;
+import dev.bernasss12.bebooks.config.ModConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.apache.logging.log4j.LogManager;
@@ -33,15 +34,17 @@ public class BetterEnchantedBooksLegacy {
      * enchantment registry should be done.
      */
     public static void onTitleScreenLoaded() {
-        if (!ModConfig.configsFirstLoaded) {
+        if (!ModConfigLegacy.configsFirstLoaded) {
             //TooltipDrawerHelper.populateEnchantmentIconList();
-            ModConfig.loadAndPopulateConfig();
-            ModConfig.saveConfig();
+            ModConfig.INSTANCE.load();
+            ModConfig.INSTANCE.save();
+            ModConfigLegacy.loadAndPopulateConfig();
+            ModConfigLegacy.saveConfig();
         }
     }
 
     private static List<ItemStack> computeApplicableItems(Enchantment enchantment) {
-        return ModConfig.checkedItemsList.stream().filter(enchantment::isAcceptableItem).collect(Collectors.toList());
+        return ModConfigLegacy.checkedItemsList.stream().filter(enchantment::isAcceptableItem).collect(Collectors.toList());
     }
 
     public static List<ItemStack> getApplicableItems(Enchantment enchantment) {

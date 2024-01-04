@@ -23,7 +23,7 @@ dependencies {
     }
 
     modImplementation("com.terraformersmc:modmenu:${modmenu_version}") {
-        exclude(group: "net.fabricmc.fabric-api")
+        exclude group: "net.fabricmc.fabric-api"
     }
 
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
