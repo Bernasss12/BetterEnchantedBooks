@@ -19,10 +19,10 @@ import net.minecraft.util.Identifier
 data class EnchantmentData(
     @Serializable(with = IdentifierSerializer::class)
     val identifier: Identifier,
-    val priority: Int,
-    val color: Color
+    var priority: Int = -1,
+    var color: Color = EnchantmentDataManager.getDefaultColorForId(identifier)
 ) {
-    private val enchantment: Enchantment? by lazy {
+    val enchantment: Enchantment? by lazy {
         Registries.ENCHANTMENT[identifier]
     }
 

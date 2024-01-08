@@ -1,3 +1,5 @@
+@file:Suppress("EqualsOrHashCode")
+
 package dev.bernasss12.bebooks.model.color
 
 import dev.bernasss12.bebooks.config.ModConfig
@@ -35,5 +37,7 @@ class Color(val rgb: Int) {
     override fun toString(): String {
         return ColorSavingMode.HEXADECIMAL.serialize(this)
     }
+
+    override fun equals(other: Any?): Boolean = this.rgb == ((other as? Color)?.rgb ?: false)
 }
 

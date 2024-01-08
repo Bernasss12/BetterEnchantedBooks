@@ -1,8 +1,10 @@
 package dev.bernasss12.bebooks.config
 
 import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy
-import dev.bernasss12.bebooks.model.color.BookColorManager.clear
+import dev.bernasss12.bebooks.model.color.BookColorManager
+import dev.bernasss12.bebooks.model.color.Color
 import dev.bernasss12.bebooks.model.color.ColorSavingMode
+import dev.bernasss12.bebooks.model.enchantment.EnchantmentDataManager
 import dev.bernasss12.bebooks.util.ModConstants.CONFIG_DIR
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_COLOR_BOOKS
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_COLOR_MODE
@@ -13,8 +15,10 @@ import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_KEEP_CURSES_BELOW
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_SORTING_MODE
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_TOOLTIP_MODE
+import me.shedaniel.clothconfig2.api.AbstractConfigListEntry
 import me.shedaniel.clothconfig2.api.ConfigBuilder
 import net.minecraft.client.gui.screen.Screen
+import net.minecraft.registry.Registries
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import java.io.File
@@ -70,6 +74,7 @@ object ModConfig {
                 file.inputStream().use { stream ->
                     properties.load(stream)
                 }
+                save()
             } catch (e: IOException) {
                 BetterEnchantedBooksLegacy.LOGGER.warn("Could not read ${file.name} properties file. Using defaults.")
             }
@@ -166,25 +171,23 @@ object ModConfig {
                 }.build()
             )
 
-//            val enchantments = ArrayList<AbstractConfigListEntry<*>>()
-//            for ((key, enchantmentData) in enchantmentDataMap) {
-//                if (enchantmentData.enchantment == null) continue  // not registered
-//                enchantments.add(
-//                    entryBuilder.startColorField(Text.literal(enchantmentData.translatedName), enchantmentData.color).apply {
-//                        setDefaultValue(DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchantmentData.enchantment, DEFAULT_BOOK_STRIP_COLOR).rgb)
-//                        setSaveConsumer { guiEntryColor: Int ->
-//                            val data = enchantmentDataMap[key]!!
-//                            data.color = guiEntryColor
-//                        }
-//                    }.build()
-//                )
-//            }
-//            enchantments.sortWith(Comparator.comparing { entry: AbstractConfigListEntry<*> ->
-//                entry.fieldName.string
-//            })
-//            addEntry(
-//                entryBuilder.startSubCategory(Text.translatable("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build()
-//            )
+            val entries = ArrayList<AbstractConfigListEntry<*>>()
+            val enchantments = Registries.ENCHANTMENT.keys.map { EnchantmentDataManager.getData(it.value) }
+            for (enchantment in enchantments) {
+                if (enchantment.enchantment == null) continue  // not registered
+                entries.add(
+                    entryBuilder.startColorField(Text.literal(enchantment.translated), enchantment.color.rgb).apply {
+                        setDefaultValue(EnchantmentDataManager.getDefaultColorForId(enchantment.identifier).rgb)
+                        setSaveConsumer { enchantment.color = Color(it) }
+                    }.build()
+                )
+            }
+            entries.sortWith(Comparator.comparing { entry: AbstractConfigListEntry<*> ->
+                entry.fieldName.string
+            })
+            addEntry(
+                entryBuilder.startSubCategory(Text.translatable("subcategory.bebooks.book_coloring_settings.enchantment_color"), entries).build()
+            )
 
             addEntry(
                 entryBuilder.startEnumSelector(
@@ -222,10 +225,9 @@ object ModConfig {
 
         setSavingRunnable {
             save()
-            clear()
+            EnchantmentDataManager.save()
 
-            // TODO
-            // saveConfig()
+            BookColorManager.clear()
         }
     }.build()
 }
