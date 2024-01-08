@@ -8,8 +8,7 @@ import java.util.stream.Collectors;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 
-import dev.bernasss12.bebooks.client.gui.ModConfigLegacy;
-import dev.bernasss12.bebooks.config.ModConfig;
+import dev.bernasss12.bebooks.util.ModConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 public class BetterEnchantedBooksLegacy {
 
     public static final Logger LOGGER = LogManager.getLogger("BEBooks");
-    //public static final ModConfig CONFIG =
     public static final ThreadLocal<ItemStack> enchantedItemStack = ThreadLocal.withInitial(() -> ItemStack.EMPTY);
     public static final ThreadLocal<Boolean> shouldShowEnchantmentMaxLevel = ThreadLocal.withInitial(() -> false);
 
@@ -29,22 +27,8 @@ public class BetterEnchantedBooksLegacy {
         cachedApplicableEnchantments = new WeakHashMap<>();
     }
 
-    /**
-     * This method gets called when the Title screen gets loaded, by this point all
-     * enchantment registry should be done.
-     */
-    public static void onTitleScreenLoaded() {
-        if (!ModConfigLegacy.configsFirstLoaded) {
-            //TooltipDrawerHelper.populateEnchantmentIconList();
-            ModConfig.INSTANCE.load();
-            ModConfig.INSTANCE.save();
-            ModConfigLegacy.loadAndPopulateConfig();
-            ModConfigLegacy.saveConfig();
-        }
-    }
-
     private static List<ItemStack> computeApplicableItems(Enchantment enchantment) {
-        return ModConfigLegacy.checkedItemsList.stream().filter(enchantment::isAcceptableItem).collect(Collectors.toList());
+        return ModConstants.DEFAULT_CHECKED_ITEMS_LIST.stream().filter(enchantment::isAcceptableItem).collect(Collectors.toList());
     }
 
     public static List<ItemStack> getApplicableItems(Enchantment enchantment) {

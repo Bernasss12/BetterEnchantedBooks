@@ -1,21 +1,18 @@
 package dev.bernasss12.bebooks.config
 
 import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy
-import dev.bernasss12.bebooks.client.gui.ModConfigLegacy.enchantmentDataMap
-import dev.bernasss12.bebooks.client.gui.ModConfigLegacy.saveConfig
-import dev.bernasss12.bebooks.util.BookColorManager.clear
+import dev.bernasss12.bebooks.model.color.BookColorManager.clear
+import dev.bernasss12.bebooks.model.color.ColorSavingMode
 import dev.bernasss12.bebooks.util.ModConstants.CONFIG_DIR
-import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_BOOK_STRIP_COLOR
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_COLOR_BOOKS
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_COLOR_MODE
+import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_COLOR_SAVING_MODE
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_CURSE_COLOR_OVERRIDE
-import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_ENCHANTMENT_COLORS
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_GLINT_SETTING
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_KEEP_CURSES_BELOW
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_SORTING_MODE
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_TOOLTIP_MODE
-import me.shedaniel.clothconfig2.api.AbstractConfigListEntry
 import me.shedaniel.clothconfig2.api.ConfigBuilder
 import net.minecraft.client.gui.screen.Screen
 import net.minecraft.text.Text
@@ -58,6 +55,9 @@ object ModConfig {
     var colorMode: SortingMode
         get() = properties.getPropertyOrDefault("color_mode", DEFAULT_COLOR_MODE, SortingMode::fromString)
         set(value) = properties.setProperty("color_mode", value)
+    var colorSavingMode: ColorSavingMode
+        get() = properties.getPropertyOrDefault("color_saving_mode", DEFAULT_COLOR_SAVING_MODE, ColorSavingMode::fromString)
+        set(value) = properties.setProperty("color_saving_mode", value)
 
     // Remove enchantment glint
     var enchantedBookGlint: Boolean
@@ -166,24 +166,35 @@ object ModConfig {
                 }.build()
             )
 
-            val enchantments = ArrayList<AbstractConfigListEntry<*>>()
-            for ((key, enchantmentData) in enchantmentDataMap) {
-                if (enchantmentData.enchantment == null) continue  // not registered
-                enchantments.add(
-                    entryBuilder.startColorField(Text.literal(enchantmentData.translatedName), enchantmentData.color).apply {
-                        setDefaultValue(DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchantmentData.enchantment, DEFAULT_BOOK_STRIP_COLOR))
-                        setSaveConsumer { guiEntryColor: Int ->
-                            val data = enchantmentDataMap[key]!!
-                            data.color = guiEntryColor
-                        }
-                    }.build()
-                )
-            }
-            enchantments.sortWith(Comparator.comparing { entry: AbstractConfigListEntry<*> ->
-                entry.fieldName.string
-            })
+//            val enchantments = ArrayList<AbstractConfigListEntry<*>>()
+//            for ((key, enchantmentData) in enchantmentDataMap) {
+//                if (enchantmentData.enchantment == null) continue  // not registered
+//                enchantments.add(
+//                    entryBuilder.startColorField(Text.literal(enchantmentData.translatedName), enchantmentData.color).apply {
+//                        setDefaultValue(DEFAULT_ENCHANTMENT_COLORS.getOrDefault(enchantmentData.enchantment, DEFAULT_BOOK_STRIP_COLOR).rgb)
+//                        setSaveConsumer { guiEntryColor: Int ->
+//                            val data = enchantmentDataMap[key]!!
+//                            data.color = guiEntryColor
+//                        }
+//                    }.build()
+//                )
+//            }
+//            enchantments.sortWith(Comparator.comparing { entry: AbstractConfigListEntry<*> ->
+//                entry.fieldName.string
+//            })
+//            addEntry(
+//                entryBuilder.startSubCategory(Text.translatable("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build()
+//            )
+
             addEntry(
-                entryBuilder.startSubCategory(Text.translatable("subcategory.bebooks.book_coloring_settings.enchantment_color"), enchantments).build()
+                entryBuilder.startEnumSelector(
+                    Text.translatable("entry.bebooks.book_coloring_settings.color_saving_mode"),
+                    ColorSavingMode::class.java,
+                    colorSavingMode,
+                ).apply {
+                    setDefaultValue(DEFAULT_COLOR_SAVING_MODE)
+                    setSaveConsumer { colorSavingMode = it }
+                }.build()
             )
         }
 
@@ -214,7 +225,7 @@ object ModConfig {
             clear()
 
             // TODO
-            saveConfig()
+            // saveConfig()
         }
     }.build()
 }

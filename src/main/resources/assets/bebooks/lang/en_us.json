@@ -8,6 +8,7 @@
   "entry.bebooks.book_coloring_settings.active": "Color books:",
   "entry.bebooks.book_coloring_settings.color_mode": "How to choose book color:",
   "entry.bebooks.book_coloring_settings.curse_color_override_others": "Curse color overrides others:",
+  "entry.bebooks.book_coloring_settings.color_saving_mode": "How to write color values to disk:",
   "subcategory.bebooks.book_coloring_settings.enchantment_color": "Enchantment Colors",
   "entry.bebooks.tooltip_settings.show_enchantment_max_level": "Show max enchantment level:",
   "entry.bebooks.tooltip_settings.tooltip_mode": "Applicable tooltip icons mode:",
@@ -16,5 +17,8 @@
   "enum.bebooks.sorting_settings.disabled": "§cDisabled",
   "enum.bebooks.tooltip_settings.enabled": "§aAlways",
   "enum.bebooks.tooltip_settings.on_shift": "§aOn Shift",
-  "enum.bebooks.tooltip_settings.disabled": "§cNever"
+  "enum.bebooks.tooltip_settings.disabled": "§cNever",
+  "enum.bebooks.color_saving_settings.hexadecimal": "#RRGGBB",
+  "enum.bebooks.color_saving_settings.rgb_values": "rgb(R,G,B)",
+  "enum.bebooks.color_saving_settings.integer": "Raw integer (legacy)"
 }

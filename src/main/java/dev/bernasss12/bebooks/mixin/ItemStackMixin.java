@@ -14,7 +14,7 @@ import net.minecraft.text.Text;
 
 import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
 import dev.bernasss12.bebooks.config.ModConfig;
-import dev.bernasss12.bebooks.util.NBTUtils;
+import dev.bernasss12.bebooks.util.NBTUtil;
 import dev.bernasss12.bebooks.util.text.IconTooltipDataText;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -32,7 +32,7 @@ public abstract class ItemStackMixin {
     @ModifyVariable(method = "appendEnchantments", argsOnly = true, at = @At("HEAD"))
     private static NbtList appendEnchantmentsHead(NbtList tag, List<Text> tooltip, NbtList enchantments) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
-            return NBTUtils.toListTag(NBTUtils.sorted(enchantments, ModConfig.INSTANCE.getSortingMode(), ModConfig.INSTANCE.getKeepCursesBelow()));
+            return NBTUtil.sorted(enchantments, ModConfig.INSTANCE.getSortingMode(), ModConfig.INSTANCE.getKeepCursesBelow());
         }
         return tag;
     }

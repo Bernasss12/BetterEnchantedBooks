@@ -2,6 +2,8 @@ package dev.bernasss12.bebooks.util
 
 import dev.bernasss12.bebooks.config.SortingMode
 import dev.bernasss12.bebooks.config.TooltipMode
+import dev.bernasss12.bebooks.model.color.Color
+import dev.bernasss12.bebooks.model.color.ColorSavingMode
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.Enchantments.*
@@ -37,8 +39,7 @@ object ModConstants {
     ).map(::ItemStack)
 
     // Default enchantment colors as suggested by twusya on https://www.curseforge.com/minecraft/mc-mods/better-enchanted-books#c47
-    @JvmField // TODO remove when not used by java class
-    val DEFAULT_ENCHANTMENT_COLORS: Map<Enchantment, Int> = mapOf(
+    val DEFAULT_ENCHANTMENT_COLORS: Map<Enchantment, Color> = hashMapOf(
         AQUA_AFFINITY to 0x6e7af7,
         BANE_OF_ARTHROPODS to 0x0f5160,
         BLAST_PROTECTION to 0x442e62,
@@ -77,7 +78,7 @@ object ModConstants {
         SWEEPING to 0xffb301,
         THORNS to 0x560d0b,
         UNBREAKING to 0x5c3350
-    )
+    ).mapValues { Color(it.value) }
 
     const val DEFAULT_SHOW_ENCHANTMENT_MAX_LEVEL: Boolean = false
     val DEFAULT_TOOLTIP_MODE: TooltipMode = TooltipMode.ON_SHIFT
@@ -86,9 +87,8 @@ object ModConstants {
     const val DEFAULT_COLOR_BOOKS: Boolean = true
     const val DEFAULT_CURSE_COLOR_OVERRIDE: Boolean = true
     val DEFAULT_COLOR_MODE: SortingMode = SortingMode.ALPHABETICALLY
+    val DEFAULT_COLOR_SAVING_MODE: ColorSavingMode = ColorSavingMode.HEXADECIMAL
 
-    @Suppress("MayBeConstant") // TODO Cannot be constant because it is a JvmField
-    @JvmField // TODO remove when not used by java class
-    val DEFAULT_BOOK_STRIP_COLOR: Int = 0xc5133a
+    val DEFAULT_BOOK_STRIP_COLOR: Color = Color(0xc5133a)
     const val DEFAULT_GLINT_SETTING: Boolean = false
 }
