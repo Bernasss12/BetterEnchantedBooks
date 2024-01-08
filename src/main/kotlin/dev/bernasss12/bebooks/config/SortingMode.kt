@@ -3,7 +3,7 @@ package dev.bernasss12.bebooks.config
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_SORTING_MODE
 import me.shedaniel.clothconfig2.gui.entries.SelectionListEntry.Translatable
 
-enum class SortingMode: Translatable {
+enum class SortingMode : Translatable {
     ALPHABETICALLY,
     CUSTOM,
     DISABLED;

@@ -13,9 +13,9 @@ import net.minecraft.item.Items;
 import net.minecraft.text.OrderedText;
 
 import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
-import dev.bernasss12.bebooks.client.gui.tooltip.IconTooltipComponent;
 import dev.bernasss12.bebooks.config.ModConfig;
 import dev.bernasss12.bebooks.config.TooltipMode;
+import dev.bernasss12.bebooks.gui.tooltip.IconTooltipComponent;
 import dev.bernasss12.bebooks.util.text.IconTooltipDataText;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -57,7 +57,7 @@ public abstract class DrawContextMixin {
                         if (originalComponent instanceof OrderedTextTooltipComponent) {
                             OrderedText text = ((OrderedTextTooltipComponentAccessor) originalComponent).getText();
                             if (text instanceof IconTooltipDataText dataText) {
-                                return new IconTooltipComponent(dataText.icons());
+                                return new IconTooltipComponent(dataText.getIcons());
                             }
                         }
                         return originalComponent;
