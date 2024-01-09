@@ -15,6 +15,7 @@ import net.minecraft.text.Text;
 import dev.bernasss12.bebooks.BetterEnchantedBooks;
 import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
 import dev.bernasss12.bebooks.config.ModConfig;
+import dev.bernasss12.bebooks.manage.MaxEnchantmentManager;
 import dev.bernasss12.bebooks.util.NBTUtil;
 import dev.bernasss12.bebooks.util.text.IconTooltipDataText;
 import net.fabricmc.api.EnvType;
@@ -35,14 +36,14 @@ public abstract class ItemStackMixin {
             argsOnly = true,
             at = @At("HEAD")
     )
-    private static NbtList appendEnchantmentsHead(NbtList tag, List<Text> tooltip, NbtList enchantments) {
+    private static NbtList appendEnchantmentHead(NbtList tag, List<Text> tooltip, NbtList enchantments) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
             return NBTUtil.sorted(enchantments, ModConfig.INSTANCE.getSortingMode(), ModConfig.INSTANCE.getKeepCursesBelow());
         }
         return tag;
     }
 
-    @Dynamic("ItemStack.appendEnchantments's lambda")
+    @Dynamic("ItemStack.appendEnchantments' lambda")
     @Inject(
             at = @At(value = "HEAD"),
             method = "method_17869",
@@ -50,11 +51,11 @@ public abstract class ItemStackMixin {
     )
     private static void setShowEnchantmentMaxLevel(List<Text> tooltip, NbtCompound tag, Enchantment enchantment, CallbackInfo info) {
         if (ModConfig.INSTANCE.getShowMaxEnchantmentLevel()) {
-            BetterEnchantedBooksLegacy.shouldShowEnchantmentMaxLevel.set(true);
+            MaxEnchantmentManager.setShowMaxLevel();
         }
     }
 
-    @Dynamic("ItemStack.appendEnchantments's lambda")
+    @Dynamic("ItemStack.appendEnchantments' lambda")
     @Inject(
             at = @At(value = "TAIL"),
             method = "method_17869",

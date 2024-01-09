@@ -4,8 +4,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
-import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
-import dev.bernasss12.bebooks.config.ModConfig;
+import dev.bernasss12.bebooks.manage.MaxEnchantmentManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,14 +20,12 @@ public abstract class EnchantmentMixin {
     @Shadow
     public abstract int getMaxLevel();
 
-    @Inject(at = @At(value = "TAIL"),
+    @Inject(
+            at = @At(value = "TAIL"),
             locals = LocalCapture.CAPTURE_FAILHARD,
-            method = "getName(I)Lnet/minecraft/text/Text;")
+            method = "getName(I)Lnet/minecraft/text/Text;"
+    )
     private void appendMaxEnchantmentLevel(int level, CallbackInfoReturnable<Text> info, MutableText enchantmentName) {
-        if (ModConfig.INSTANCE.getShowMaxEnchantmentLevel() && (level != 1 || this.getMaxLevel() != 1)
-                && BetterEnchantedBooksLegacy.shouldShowEnchantmentMaxLevel.get()) {
-            enchantmentName.append("/").append(Text.translatable("enchantment.level." + this.getMaxLevel()));
-            BetterEnchantedBooksLegacy.shouldShowEnchantmentMaxLevel.set(false);
-        }
+        MaxEnchantmentManager.appendMaxEnchantmentLevel(level, this.getMaxLevel(), enchantmentName);
     }
 }

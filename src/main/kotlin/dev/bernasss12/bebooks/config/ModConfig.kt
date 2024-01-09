@@ -1,6 +1,6 @@
 package dev.bernasss12.bebooks.config
 
-import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy
+import dev.bernasss12.bebooks.BetterEnchantedBooks.LOGGER
 import dev.bernasss12.bebooks.model.color.BookColorManager
 import dev.bernasss12.bebooks.model.color.Color
 import dev.bernasss12.bebooks.model.color.ColorSavingMode
@@ -76,7 +76,7 @@ object ModConfig {
                 }
                 save()
             } catch (e: IOException) {
-                BetterEnchantedBooksLegacy.LOGGER.warn("Could not read ${file.name} properties file. Using defaults.")
+                LOGGER.warn("Could not read ${file.name} properties file. Using defaults.")
             }
         }
     }
@@ -89,14 +89,14 @@ object ModConfig {
                     try {
                         // TODO add client command to reload settings
                         store(stream, "The settings will only be loaded at game start when changed here.")
-                        BetterEnchantedBooksLegacy.LOGGER.debug("Saving configs to disk.")
+                        LOGGER.debug("Saving configs to disk.")
                     } catch (e: IOException) {
-                        BetterEnchantedBooksLegacy.LOGGER.warn("Could not write ${file.name} properties file. Changed settings may be lost.")
+                        LOGGER.warn("Could not write ${file.name} properties file. Changed settings may be lost.")
                     }
                 }
             }
         } catch (e: IOException) {
-            BetterEnchantedBooksLegacy.LOGGER.error("Couldn't create config directory.\nChanged settings could be lost!", e)
+            LOGGER.error("Couldn't create config directory.\nChanged settings could be lost!", e)
         }
     }
 

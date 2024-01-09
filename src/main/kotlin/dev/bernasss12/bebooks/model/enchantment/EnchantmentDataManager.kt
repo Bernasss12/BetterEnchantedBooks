@@ -1,5 +1,6 @@
 package dev.bernasss12.bebooks.model.enchantment
 
+import dev.bernasss12.bebooks.BetterEnchantedBooks.LOGGER
 import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy
 import dev.bernasss12.bebooks.model.color.Color
 import dev.bernasss12.bebooks.util.ModConstants
@@ -74,7 +75,7 @@ object EnchantmentDataManager {
                     cache[enchantmentData.identifier] = enchantmentData
                 }
             } catch (e: SerializationException) {
-                BetterEnchantedBooksLegacy.LOGGER.warn("Failed to parse ${file.name}, going to try legacy parsing. This file will be overwritten when saved.")
+                LOGGER.warn("Failed to parse ${file.name}, going to try legacy parsing. This file will be overwritten when saved.")
                 try {
                     val old: Map<String, Map<String, Int>> = json.decodeFromString(jsonString)
                     old.forEach { (key, value) ->
@@ -86,13 +87,13 @@ object EnchantmentDataManager {
                             color = value["color"]?.let { Color(it) } ?: getDefaultColorForId(identifier)
                         )
                     }
-                    BetterEnchantedBooksLegacy.LOGGER.error("Legacy format read. Old index random values pointless. Suggest deleting settings file if no color values changed. File: ${file.absolutePath}")
+                    LOGGER.error("Legacy format read. Old index random values pointless. Suggest deleting settings file if no color values changed. File: ${file.absolutePath}")
                 } catch (e: SerializationException) {
-                    BetterEnchantedBooksLegacy.LOGGER.warn("Failed to read from legacy format. Using default values.")
+                    LOGGER.warn("Failed to read from legacy format. Using default values.")
                 }
             }
         } catch (e: IOException) {
-            BetterEnchantedBooksLegacy.LOGGER.debug("No configuration file found. Creating new one.")
+            LOGGER.debug("No configuration file found. Creating new one.")
         }
         save()
     }
