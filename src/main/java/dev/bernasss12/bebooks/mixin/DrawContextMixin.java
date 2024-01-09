@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.OrderedText;
 
-import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
+import dev.bernasss12.bebooks.BetterEnchantedBooks;
 import dev.bernasss12.bebooks.config.ModConfig;
 import dev.bernasss12.bebooks.config.TooltipMode;
 import dev.bernasss12.bebooks.gui.tooltip.IconTooltipComponent;
@@ -34,12 +34,15 @@ public abstract class DrawContextMixin {
         at = @At("HEAD")
     )
     private void setEnchantedItemStack(TextRenderer textRenderer, ItemStack stack, int x, int y, CallbackInfo ci) {
-        BetterEnchantedBooksLegacy.enchantedItemStack.set(stack);
+        BetterEnchantedBooks.setItemstack(stack);
     }
 
-    @Inject(method = "drawItemTooltip(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V", at = @At(value = "TAIL"))
+    @Inject(
+            method = "drawItemTooltip(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;II)V",
+            at = @At(value = "TAIL")
+    )
     private void forgetEnchantedItemStack(TextRenderer textRenderer, ItemStack stack, int x, int y, CallbackInfo ci) {
-        BetterEnchantedBooksLegacy.enchantedItemStack.set(ItemStack.EMPTY);
+        BetterEnchantedBooks.setItemstack(ItemStack.EMPTY);
     }
 
     @ModifyVariable(
@@ -48,7 +51,7 @@ public abstract class DrawContextMixin {
         argsOnly = true
     )
     private List<TooltipComponent> convertTooltipComponents(List<TooltipComponent> components) {
-        if (BetterEnchantedBooksLegacy.enchantedItemStack.get().getItem().equals(Items.ENCHANTED_BOOK)) {
+        if (BetterEnchantedBooks.getItemstack().getItem().equals(Items.ENCHANTED_BOOK)) {
             if (
                     ModConfig.INSTANCE.getTooltipMode() == TooltipMode.ENABLED || (
                             ModConfig.INSTANCE.getTooltipMode() == TooltipMode.ON_SHIFT && Screen.hasShiftDown())) {

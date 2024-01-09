@@ -3,20 +3,33 @@ package dev.bernasss12.bebooks
 import dev.bernasss12.bebooks.config.ModConfig
 import dev.bernasss12.bebooks.model.color.BookColorManager.itemColorProvider
 import dev.bernasss12.bebooks.model.enchantment.EnchantmentDataManager
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry
+import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 
+@Environment(EnvType.CLIENT)
 object BetterEnchantedBooks {
     @Suppress("Unused")
     fun init() {
         BetterEnchantedBooksLegacy.onInitializeClient()
-
         ColorProviderRegistry.ITEM.register(itemColorProvider, Items.ENCHANTED_BOOK)
     }
 
-    @JvmStatic //TODO remove when TitleScreen MIXIN is converted to kotlin.
+    private val currentItemstack = ThreadLocal.withInitial { ItemStack.EMPTY }
+
+    @JvmStatic
     fun onTitleScreenLoaded() {
         ModConfig.load()
         EnchantmentDataManager.load()
     }
+
+    @JvmStatic
+    fun setItemstack(stack: ItemStack) {
+        currentItemstack.set(stack)
+    }
+
+    @JvmStatic
+    fun getItemstack(): ItemStack = currentItemstack.get()
 }

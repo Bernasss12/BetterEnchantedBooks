@@ -18,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 public class BetterEnchantedBooksLegacy {
 
     public static final Logger LOGGER = LogManager.getLogger("BEBooks");
-    public static final ThreadLocal<ItemStack> enchantedItemStack = ThreadLocal.withInitial(() -> ItemStack.EMPTY);
     public static final ThreadLocal<Boolean> shouldShowEnchantmentMaxLevel = ThreadLocal.withInitial(() -> false);
 
     public static Map<Enchantment, List<ItemStack>> cachedApplicableEnchantments;
