@@ -12,9 +12,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 
-import dev.bernasss12.bebooks.BetterEnchantedBooks;
 import dev.bernasss12.bebooks.BetterEnchantedBooksLegacy;
 import dev.bernasss12.bebooks.config.ModConfig;
+import dev.bernasss12.bebooks.manage.ItemStackManager;
 import dev.bernasss12.bebooks.manage.MaxEnchantmentManager;
 import dev.bernasss12.bebooks.util.NBTUtil;
 import dev.bernasss12.bebooks.util.text.IconTooltipDataText;
@@ -63,7 +63,7 @@ public abstract class ItemStackMixin {
     )
     private static void addTooltipIcons(List<Text> tooltip, NbtCompound tag, Enchantment enchantment, CallbackInfo info) {
         if (MinecraftClient.getInstance().currentScreen instanceof HandledScreen) {
-            if (BetterEnchantedBooks.getItemstack().getItem().equals(Items.ENCHANTED_BOOK)) {
+            if (ItemStackManager.getItemstack().getItem().equals(Items.ENCHANTED_BOOK)) {
                 switch (ModConfig.INSTANCE.getTooltipMode()) {
                     case ENABLED:
                         tooltip.add(new IconTooltipDataText(BetterEnchantedBooksLegacy.getApplicableItems(enchantment)));

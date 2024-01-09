@@ -4,7 +4,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.item.ItemStack;
 
-import dev.bernasss12.bebooks.BetterEnchantedBooks;
+import dev.bernasss12.bebooks.manage.ItemStackManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,7 +25,7 @@ public abstract class HandledScreenMixin {
         index = 0
     )
     private ItemStack setEnchantedItemStack(ItemStack stack) {
-        BetterEnchantedBooks.setItemstack(stack);
+        ItemStackManager.setItemstack(stack);
         return stack;
     }
 
@@ -34,6 +34,6 @@ public abstract class HandledScreenMixin {
             at = @At(value = "TAIL")
     )
     private void forgetEnchantedItemStack(DrawContext context, int x, int y, CallbackInfo ci) {
-        BetterEnchantedBooks.setItemstack(ItemStack.EMPTY);
+        ItemStackManager.setItemstack(ItemStack.EMPTY);
     }
 }

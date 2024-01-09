@@ -11,8 +11,6 @@ import net.minecraft.item.ItemStack;
 import dev.bernasss12.bebooks.util.ModConstants;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class BetterEnchantedBooksLegacy {
