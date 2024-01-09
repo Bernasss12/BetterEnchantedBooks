@@ -1,8 +1,8 @@
 package dev.bernasss12.bebooks
 
 import dev.bernasss12.bebooks.config.ModConfig
-import dev.bernasss12.bebooks.model.color.BookColorManager.itemColorProvider
-import dev.bernasss12.bebooks.model.enchantment.EnchantmentDataManager
+import dev.bernasss12.bebooks.manage.BookColorManager.itemColorProvider
+import dev.bernasss12.bebooks.manage.EnchantmentDataManager
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry
@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger
 object BetterEnchantedBooks {
     @Suppress("Unused")
     fun init() {
-        BetterEnchantedBooksLegacy.onInitializeClient()
         ColorProviderRegistry.ITEM.register(itemColorProvider, Items.ENCHANTED_BOOK)
     }
 

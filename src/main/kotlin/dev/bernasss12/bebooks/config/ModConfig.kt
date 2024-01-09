@@ -1,10 +1,10 @@
 package dev.bernasss12.bebooks.config
 
 import dev.bernasss12.bebooks.BetterEnchantedBooks.LOGGER
-import dev.bernasss12.bebooks.model.color.BookColorManager
+import dev.bernasss12.bebooks.manage.BookColorManager
+import dev.bernasss12.bebooks.manage.EnchantmentDataManager
 import dev.bernasss12.bebooks.model.color.Color
 import dev.bernasss12.bebooks.model.color.ColorSavingMode
-import dev.bernasss12.bebooks.model.enchantment.EnchantmentDataManager
 import dev.bernasss12.bebooks.util.ModConstants.CONFIG_DIR
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_COLOR_BOOKS
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_COLOR_MODE
@@ -47,6 +47,12 @@ object ModConfig {
     var tooltipMode: TooltipMode
         get() = properties.getPropertyOrDefault("tooltip_mode", DEFAULT_TOOLTIP_MODE, TooltipMode::fromString)
         set(value) = properties.setProperty("tooltip_mode", value)
+
+    inline fun <T> applyTooltip(block: () -> T) {
+        if (tooltipMode == TooltipMode.ENABLED || (tooltipMode == TooltipMode.ON_SHIFT && Screen.hasShiftDown())) {
+            block.invoke()
+        }
+    }
 
 
     // Coloring settings

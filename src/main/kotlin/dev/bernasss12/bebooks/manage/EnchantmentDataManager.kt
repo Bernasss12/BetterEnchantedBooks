@@ -1,7 +1,8 @@
-package dev.bernasss12.bebooks.model.enchantment
+package dev.bernasss12.bebooks.manage
 
 import dev.bernasss12.bebooks.BetterEnchantedBooks.LOGGER
 import dev.bernasss12.bebooks.model.color.Color
+import dev.bernasss12.bebooks.model.enchantment.EnchantmentData
 import dev.bernasss12.bebooks.util.ModConstants
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_BOOK_STRIP_COLOR
 import dev.bernasss12.bebooks.util.ModConstants.DEFAULT_ENCHANTMENT_COLORS

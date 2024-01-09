@@ -1,5 +1,6 @@
 package dev.bernasss12.bebooks.model.enchantment
 
+import dev.bernasss12.bebooks.manage.EnchantmentDataManager
 import dev.bernasss12.bebooks.model.color.Color
 import dev.bernasss12.bebooks.util.NBTUtil.getEnchantmentID
 import kotlinx.serialization.KSerializer
