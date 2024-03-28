@@ -34,7 +34,6 @@ import static dev.bernasss12.bebooks.client.gui.ModConstants.*;
 public class ModConfig {
     private static final Path CONFIG_DIR = FabricLoader.getInstance().getConfigDir().resolve("bebooks");
 
-    public static boolean configsFirstLoaded = false;
     public static Map<String, EnchantmentData> enchantmentDataMap = new HashMap<>();
 
     // Sorting Settings
@@ -173,8 +172,6 @@ public class ModConfig {
 
         loadEnchantmentData();
         populateEnchantmentData();
-
-        configsFirstLoaded = true;
     }
 
     public static void saveConfig() {
